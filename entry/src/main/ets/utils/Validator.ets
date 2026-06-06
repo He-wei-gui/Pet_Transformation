@@ -1,21 +1,23 @@
 /**
- * 单条校验结果。ArkTS 不支持 zod，故以显式校验函数替代（项目规则）。
+ * 单条校验结果。messageKey 为字符串资源名（如 'err_password_min'），
+ * 由页面通过 resourceManager 解析为当前语言文案，从而支持中英文 i18n。
+ * ArkTS 不支持 zod，故以显式校验函数替代（项目规则）。
  */
 export class ValidationResult {
   readonly valid: boolean;
-  readonly message: string;
+  readonly messageKey: string;
 
-  constructor(valid: boolean, message: string) {
+  constructor(valid: boolean, messageKey: string) {
     this.valid = valid;
-    this.message = message;
+    this.messageKey = messageKey;
   }
 
   static ok(): ValidationResult {
     return new ValidationResult(true, '');
   }
 
-  static fail(message: string): ValidationResult {
-    return new ValidationResult(false, message);
+  static fail(messageKey: string): ValidationResult {
+    return new ValidationResult(false, messageKey);
   }
 }
 
@@ -26,10 +28,10 @@ export class Validator {
   static username(value: string): ValidationResult {
     const v: string = value.trim();
     if (v.length === 0) {
-      return ValidationResult.fail('请输入用户名');
+      return ValidationResult.fail('err_username_required');
     }
     if (!USERNAME_PATTERN.test(v)) {
-      return ValidationResult.fail('用户名需为 3-20 位字母、数字或下划线');
+      return ValidationResult.fail('err_username_format');
     }
     return ValidationResult.ok();
   }
@@ -37,10 +39,10 @@ export class Validator {
   /** 密码：6-32 位。 */
   static password(value: string): ValidationResult {
     if (value.length < 6) {
-      return ValidationResult.fail('密码至少 6 位');
+      return ValidationResult.fail('err_password_min');
     }
     if (value.length > 32) {
-      return ValidationResult.fail('密码不能超过 32 位');
+      return ValidationResult.fail('err_password_max');
     }
     return ValidationResult.ok();
   }
@@ -48,32 +50,29 @@ export class Validator {
   /** 两次密码一致。 */
   static passwordMatch(password: string, confirm: string): ValidationResult {
     if (password !== confirm) {
-      return ValidationResult.fail('两次输入的密码不一致');
+      return ValidationResult.fail('err_password_mismatch');
     }
     return ValidationResult.ok();
   }
 
   /** 非空文本，limit 为最大长度。 */
-  static requiredText(value: string, fieldName: string, limit: number): ValidationResult {
+  static requiredText(value: string, limit: number): ValidationResult {
     const v: string = value.trim();
     if (v.length === 0) {
-      return ValidationResult.fail(`请输入${fieldName}`);
+      return ValidationResult.fail('err_required');
     }
     if (v.length > limit) {
-      return ValidationResult.fail(`${fieldName}不能超过 ${limit} 个字符`);
+      return ValidationResult.fail('err_too_long');
     }
     return ValidationResult.ok();
   }
 
-  /** 正数（用于体重、天数、温湿度等）。 */
-  static positiveNumber(value: string, fieldName: string): ValidationResult {
+  /** 正数（用于体重、温湿度等）。 */
+  static positiveNumber(value: string): ValidationResult {
     const v: string = value.trim();
-    if (v.length === 0) {
-      return ValidationResult.fail(`请输入${fieldName}`);
-    }
     const n: number = Number.parseFloat(v);
-    if (Number.isNaN(n) || n <= 0) {
-      return ValidationResult.fail(`${fieldName}需为正数`);
+    if (v.length === 0 || Number.isNaN(n) || n <= 0) {
+      return ValidationResult.fail('err_positive');
     }
     return ValidationResult.ok();
   }
@@ -82,7 +81,7 @@ export class Validator {
   static intervalDays(value: string): ValidationResult {
     const n: number = Number.parseInt(value.trim(), 10);
     if (Number.isNaN(n) || n < 1 || n > 365) {
-      return ValidationResult.fail('间隔需为 1-365 天');
+      return ValidationResult.fail('err_interval');
     }
     return ValidationResult.ok();
   }

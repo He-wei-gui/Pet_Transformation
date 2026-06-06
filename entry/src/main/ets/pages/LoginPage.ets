@@ -6,6 +6,7 @@ import { Result } from '../utils/Result';
 import { FormField } from '../components/FormField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { Logger } from '../utils/Logger';
+import { I18n } from '../utils/I18n';
 
 /**
  * 登录页：账号密码 + 本地校验，登录成功跳主页。
@@ -21,12 +22,12 @@ struct LoginPage {
   private async handleLogin(): Promise<void> {
     const u: ValidationResult = Validator.username(this.username);
     if (!u.valid) {
-      this.errorMsg = u.message;
+      this.errorMsg = I18n.t(getContext(this), u.messageKey);
       return;
     }
     const p: ValidationResult = Validator.password(this.password);
     if (!p.valid) {
-      this.errorMsg = p.message;
+      this.errorMsg = I18n.t(getContext(this), p.messageKey);
       return;
     }
     this.errorMsg = '';
@@ -38,7 +39,7 @@ struct LoginPage {
         Logger.error(`nav main failed: ${JSON.stringify(err)}`);
       });
     } else {
-      this.errorMsg = res.error;
+      this.errorMsg = I18n.t(getContext(this), res.error);
     }
   }
 
@@ -72,7 +73,7 @@ struct LoginPage {
 
         FormField({
           label: $r('app.string.login_username'),
-          placeholder: '请输入用户名',
+          placeholder: $r('app.string.hint_username'),
           text: this.username,
           onChange: (v: string): void => {
             this.username = v;
@@ -82,7 +83,7 @@ struct LoginPage {
 
         FormField({
           label: $r('app.string.login_password'),
-          placeholder: '请输入密码',
+          placeholder: $r('app.string.hint_password'),
           text: this.password,
           isPassword: true,
           onChange: (v: string): void => {

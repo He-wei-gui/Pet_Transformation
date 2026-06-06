@@ -1,0 +1,56 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "Pet Growth Tracker" },
+    { "name": "EntryAbility_desc", "value": "Pet Growth Tracker" },
+    { "name": "EntryAbility_label", "value": "Pet Transform" },
+    { "name": "app_name", "value": "Pet Transform" },
+    { "name": "app_full_name", "value": "Pet Growth Tracker" },
+    { "name": "app_slogan", "value": "Cherish every transformation" },
+
+    { "name": "tab_home", "value": "Home" },
+    { "name": "tab_pets", "value": "Pets" },
+    { "name": "tab_calendar", "value": "Calendar" },
+    { "name": "tab_stats", "value": "Stats" },
+    { "name": "tab_mine", "value": "Me" },
+
+    { "name": "login_title", "value": "Welcome Back" },
+    { "name": "login_username", "value": "Username" },
+    { "name": "login_password", "value": "Password" },
+    { "name": "login_submit", "value": "Log In" },
+    { "name": "login_to_register", "value": "No account? Sign up" },
+
+    { "name": "register_title", "value": "Create Account" },
+    { "name": "register_nickname", "value": "Nickname" },
+    { "name": "register_password_confirm", "value": "Confirm Password" },
+    { "name": "register_submit", "value": "Sign Up" },
+    { "name": "register_to_login", "value": "Have an account? Log in" },
+
+    { "name": "common_save", "value": "Save" },
+    { "name": "common_cancel", "value": "Cancel" },
+    { "name": "common_delete", "value": "Delete" },
+    { "name": "common_confirm", "value": "Confirm" },
+    { "name": "common_add", "value": "Add" },
+    { "name": "empty_default", "value": "No data yet" },
+
+    { "name": "hint_username", "value": "Enter your username" },
+    { "name": "hint_password", "value": "Enter your password" },
+    { "name": "hint_username_rule", "value": "3-20 letters, digits or underscores" },
+    { "name": "hint_nickname", "value": "Optional, defaults to username" },
+    { "name": "hint_password_min", "value": "At least 6 characters" },
+    { "name": "hint_password_confirm", "value": "Re-enter your password" },
+
+    { "name": "err_username_required", "value": "Please enter a username" },
+    { "name": "err_username_format", "value": "Username must be 3-20 letters, digits or underscores" },
+    { "name": "err_password_min", "value": "Password must be at least 6 characters" },
+    { "name": "err_password_max", "value": "Password must be at most 32 characters" },
+    { "name": "err_password_mismatch", "value": "Passwords do not match" },
+    { "name": "err_required", "value": "This field is required" },
+    { "name": "err_too_long", "value": "Input is too long" },
+    { "name": "err_positive", "value": "Please enter a positive number" },
+    { "name": "err_interval", "value": "Interval must be 1-365 days" },
+    { "name": "err_username_taken", "value": "Username already taken" },
+    { "name": "err_register_failed", "value": "Registration failed, please try again" },
+    { "name": "err_login_invalid", "value": "Incorrect username or password" },
+    { "name": "err_login_failed", "value": "Login failed, please try again" }
+  ]
+}

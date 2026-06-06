@@ -17,7 +17,7 @@ export class AuthService {
       const trimmedName: string = username.trim();
       const existing: User | null = await UserRepository.findByUsername(trimmedName);
       if (existing !== null) {
-        return Result.fail('用户名已被占用');
+        return Result.fail('err_username_taken');
       }
       const salt: string = Hash.generateSalt();
       const hash: string = await Hash.sha256(salt, password);
@@ -29,7 +29,7 @@ export class AuthService {
       return Result.ok(id);
     } catch (err) {
       Logger.error(`register failed: ${JSON.stringify(err)}`);
-      return Result.fail('注册失败，请稍后重试');
+      return Result.fail('err_register_failed');
     }
   }
 
@@ -38,17 +38,17 @@ export class AuthService {
     try {
       const user: User | null = await UserRepository.findByUsername(username.trim());
       if (user === null) {
-        return Result.fail('用户名或密码错误');
+        return Result.fail('err_login_invalid');
       }
       const hash: string = await Hash.sha256(user.salt, password);
       if (hash !== user.passwordHash) {
-        return Result.fail('用户名或密码错误');
+        return Result.fail('err_login_invalid');
       }
       await SessionStore.save(user.id, user.nickname);
       return Result.ok(user.id);
     } catch (err) {
       Logger.error(`login failed: ${JSON.stringify(err)}`);
-      return Result.fail('登录失败，请稍后重试');
+      return Result.fail('err_login_failed');
     }
   }
 

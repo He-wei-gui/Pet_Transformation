@@ -6,6 +6,7 @@ import { Result } from '../utils/Result';
 import { FormField } from '../components/FormField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { Logger } from '../utils/Logger';
+import { I18n } from '../utils/I18n';
 
 /**
  * 注册页：用户名 + 昵称 + 密码 + 确认密码，本地校验；注册成功自动登录并进入主页。
@@ -35,7 +36,7 @@ struct RegisterPage {
   private async handleRegister(): Promise<void> {
     const check: ValidationResult = this.validate();
     if (!check.valid) {
-      this.errorMsg = check.message;
+      this.errorMsg = I18n.t(getContext(this), check.messageKey);
       return;
     }
     this.errorMsg = '';
@@ -47,7 +48,7 @@ struct RegisterPage {
         Logger.error(`nav main failed: ${JSON.stringify(err)}`);
       });
     } else {
-      this.errorMsg = res.error;
+      this.errorMsg = I18n.t(getContext(this), res.error);
     }
   }
 
@@ -67,7 +68,7 @@ struct RegisterPage {
         Column() {
           FormField({
             label: $r('app.string.login_username'),
-            placeholder: '3-20 位字母、数字或下划线',
+            placeholder: $r('app.string.hint_username_rule'),
             text: this.username,
             onChange: (v: string): void => {
               this.username = v;
@@ -77,7 +78,7 @@ struct RegisterPage {
 
           FormField({
             label: $r('app.string.register_nickname'),
-            placeholder: '选填，默认与用户名相同',
+            placeholder: $r('app.string.hint_nickname'),
             text: this.nickname,
             onChange: (v: string): void => {
               this.nickname = v;
@@ -87,7 +88,7 @@ struct RegisterPage {
 
           FormField({
             label: $r('app.string.login_password'),
-            placeholder: '至少 6 位',
+            placeholder: $r('app.string.hint_password_min'),
             text: this.password,
             isPassword: true,
             onChange: (v: string): void => {
@@ -98,7 +99,7 @@ struct RegisterPage {
 
           FormField({
             label: $r('app.string.register_password_confirm'),
-            placeholder: '再次输入密码',
+            placeholder: $r('app.string.hint_password_confirm'),
             text: this.confirm,
             isPassword: true,
             onChange: (v: string): void => {
