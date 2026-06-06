@@ -1,0 +1,112 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "宠物成长记录系统"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "宠物成长记录系统"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "蜕变记"
+    },
+    {
+      "name": "app_name",
+      "value": "蜕变记"
+    },
+    {
+      "name": "app_full_name",
+      "value": "宠物成长记录系统"
+    },
+    {
+      "name": "app_slogan",
+      "value": "用心记录每一次蜕变"
+    },
+    {
+      "name": "tab_home",
+      "value": "首页"
+    },
+    {
+      "name": "tab_pets",
+      "value": "宠物"
+    },
+    {
+      "name": "tab_calendar",
+      "value": "日历"
+    },
+    {
+      "name": "tab_stats",
+      "value": "统计"
+    },
+    {
+      "name": "tab_mine",
+      "value": "我的"
+    },
+    {
+      "name": "login_title",
+      "value": "欢迎回来"
+    },
+    {
+      "name": "login_username",
+      "value": "用户名"
+    },
+    {
+      "name": "login_password",
+      "value": "密码"
+    },
+    {
+      "name": "login_submit",
+      "value": "登录"
+    },
+    {
+      "name": "login_to_register",
+      "value": "还没有账号？去注册"
+    },
+    {
+      "name": "register_title",
+      "value": "创建账号"
+    },
+    {
+      "name": "register_nickname",
+      "value": "昵称"
+    },
+    {
+      "name": "register_password_confirm",
+      "value": "确认密码"
+    },
+    {
+      "name": "register_submit",
+      "value": "注册"
+    },
+    {
+      "name": "register_to_login",
+      "value": "已有账号？去登录"
+    },
+    {
+      "name": "common_save",
+      "value": "保存"
+    },
+    {
+      "name": "common_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "common_delete",
+      "value": "删除"
+    },
+    {
+      "name": "common_confirm",
+      "value": "确定"
+    },
+    {
+      "name": "common_add",
+      "value": "添加"
+    },
+    {
+      "name": "empty_default",
+      "value": "暂无数据"
+    }
+  ]
+}
