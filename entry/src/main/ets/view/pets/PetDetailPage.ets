@@ -28,11 +28,18 @@ class RecordCat {
 
 /**
  * 宠物详情：资料 + 体重趋势曲线 + 记录分类入口 + 删除。
+ * 资料用基础类型 @State 承载，onPageShow 重新拉取，保证编辑返回后即时刷新。
  */
 @Entry
 @Component
 struct PetDetailPage {
-  @State pet: Pet | null = null;
+  @State loaded: boolean = false;
+  @State petName: string = '';
+  @State petSpecies: string = '';
+  @State petAvatar: string = '';
+  @State petNote: string = '';
+  @State nextFeed: string = '';
+  @State nextSub: string = '';
   @State weights: number[] = [];
   @State cats: RecordCat[] = [];
   private petId: number = 0;
@@ -55,7 +62,16 @@ struct PetDetailPage {
 
   private async load(): Promise<void> {
     try {
-      this.pet = await PetService.getPet(this.petId);
+      const pet: Pet | null = await PetService.getPet(this.petId);
+      if (pet !== null) {
+        this.petName = pet.name;
+        this.petSpecies = pet.species;
+        this.petAvatar = pet.avatar;
+        this.petNote = pet.note;
+        this.nextFeed = pet.nextFeedDate;
+        this.nextSub = pet.nextSubDate;
+        this.loaded = true;
+      }
       const logs: WeightLog[] = await WeightLogRepository.listByPet(this.petId);
       const values: number[] = [];
       for (let i: number = 0; i < logs.length; i++) {
@@ -97,37 +113,37 @@ struct PetDetailPage {
   }
 
   @Builder
-  petHeader(pet: Pet) {
+  petHeader() {
     Column() {
-      PetAvatar({ avatar: pet.avatar, diameter: 88 })
-      Text(pet.name)
+      PetAvatar({ avatar: this.petAvatar, diameter: 88 })
+      Text(this.petName)
         .fontSize($r('app.float.font_title'))
         .fontWeight(FontWeight.Bold)
         .fontColor($r('app.color.text_primary'))
         .margin({ top: $r('app.float.space_md') })
-      Text(pet.species)
+      Text(this.petSpecies)
         .fontSize($r('app.float.font_caption'))
         .fontColor($r('app.color.text_secondary'))
         .margin({ top: 2 })
 
       Row({ space: 8 }) {
-        if (pet.nextFeedDate.length > 0) {
+        if (this.nextFeed.length > 0) {
           UrgencyTag({
-            level: UrgencyInfo.evaluate(pet.nextFeedDate).level,
-            text: `${I18n.t(getContext(this), 'next_feed')} · ${UrgencyText.label(getContext(this), UrgencyInfo.evaluate(pet.nextFeedDate))}`
+            level: UrgencyInfo.evaluate(this.nextFeed).level,
+            text: `${I18n.t(getContext(this), 'next_feed')} · ${UrgencyText.label(getContext(this), UrgencyInfo.evaluate(this.nextFeed))}`
           })
         }
-        if (pet.nextSubDate.length > 0) {
+        if (this.nextSub.length > 0) {
           UrgencyTag({
-            level: UrgencyInfo.evaluate(pet.nextSubDate).level,
-            text: `${I18n.t(getContext(this), 'next_substrate')} · ${UrgencyText.label(getContext(this), UrgencyInfo.evaluate(pet.nextSubDate))}`
+            level: UrgencyInfo.evaluate(this.nextSub).level,
+            text: `${I18n.t(getContext(this), 'next_substrate')} · ${UrgencyText.label(getContext(this), UrgencyInfo.evaluate(this.nextSub))}`
           })
         }
       }
       .margin({ top: $r('app.float.space_md') })
 
-      if (pet.note.length > 0) {
-        Text(pet.note)
+      if (this.petNote.length > 0) {
+        Text(this.petNote)
           .fontSize($r('app.float.font_caption'))
           .fontColor($r('app.color.text_secondary'))
           .margin({ top: $r('app.float.space_md') })
@@ -171,7 +187,7 @@ struct PetDetailPage {
   build() {
     Column() {
       TopBar({
-        title: this.pet !== null ? this.pet.name : '',
+        title: this.petName,
         actionText: $r('app.string.common_edit_short'),
         showAction: true,
         onAction: (): void => {
@@ -181,8 +197,8 @@ struct PetDetailPage {
 
       Scroll() {
         Column({ space: 16 }) {
-          if (this.pet !== null) {
-            this.petHeader(this.pet)
+          if (this.loaded) {
+            this.petHeader()
           }
 
           Column() {

@@ -17,10 +17,11 @@ export class TodoRepository {
     );
   }
 
-  static async listActiveByUser(userId: number): Promise<Todo[]> {
+  /** 返回该用户全部待办：未完成(done=0)在前，再按日期升序。 */
+  static async listByUser(userId: number): Promise<Todo[]> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('user_id', userId);
-    predicates.equalTo('done', 0);
+    predicates.orderByAsc('done');
     predicates.orderByAsc('date');
     const rs: relationalStore.ResultSet = await Database.getStore().query(predicates);
     const list: Todo[] = [];
@@ -29,6 +30,13 @@ export class TodoRepository {
     }
     rs.close();
     return list;
+  }
+
+  static async setDone(id: number, done: number): Promise<void> {
+    const vb: relationalStore.ValuesBucket = { 'done': done };
+    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
+    predicates.equalTo('id', id);
+    await Database.getStore().update(vb, predicates);
   }
 
   static async create(todo: Todo): Promise<number> {

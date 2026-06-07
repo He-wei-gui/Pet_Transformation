@@ -77,7 +77,7 @@ export struct PetListTab {
                 }
               })
             }
-          }, (pet: Pet) => `${pet.id}`)
+          }, (pet: Pet) => `${pet.id}-${pet.name}-${pet.species}-${pet.avatar}-${pet.nextFeedDate}-${pet.nextSubDate}`)
         }
         .width('100%')
         .layoutWeight(1)
