@@ -11,8 +11,8 @@ export struct DateField {
 
   private openPicker(): void {
     DatePickerDialog.show({
-      start: new Date(2010, 0, 1),
-      end: new Date(),
+      start: new Date(2015, 0, 1),
+      end: new Date(2100, 11, 31),
       selected: DateUtil.parse(this.date),
       onDateAccept: (value: Date) => {
         this.onPick(DateUtil.format(value));
