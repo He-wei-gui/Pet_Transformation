@@ -170,14 +170,35 @@ export struct CalendarTab {
     .margin({ top: $r('app.float.space_md') })
   }
 
+  // 双色高亮：选中=深绿(brand_primary)，今天=浅绿(urgency_upcoming_bg)，其余透明
+  private cellBg(cell: CalCell): ResourceColor {
+    if (cell.isSelected) {
+      return $r('app.color.brand_primary');
+    }
+    if (cell.isToday) {
+      return $r('app.color.urgency_upcoming_bg');
+    }
+    return Color.Transparent;
+  }
+
+  private cellTextColor(cell: CalCell): ResourceColor {
+    if (cell.isSelected) {
+      return $r('app.color.text_on_brand');
+    }
+    if (cell.isToday) {
+      return $r('app.color.brand_primary');
+    }
+    return $r('app.color.text_primary');
+  }
+
   @Builder
   dayCell(cell: CalCell) {
     Column() {
       if (cell.day > 0) {
         Text(`${cell.day}`)
           .fontSize($r('app.float.font_caption'))
-          .fontColor(cell.isSelected ? $r('app.color.text_on_brand') : $r('app.color.text_primary'))
-          .fontWeight(cell.isToday ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(this.cellTextColor(cell))
+          .fontWeight(cell.isSelected || cell.isToday ? FontWeight.Bold : FontWeight.Normal)
         Circle({ width: 5, height: 5 })
           .fill(cell.hasEvent ? $r('app.color.urgency_today') : Color.Transparent)
           .margin({ top: 3 })
@@ -187,7 +208,7 @@ export struct CalendarTab {
     .height(44)
     .justifyContent(FlexAlign.Center)
     .borderRadius(10)
-    .backgroundColor(cell.isSelected ? $r('app.color.brand_primary') : Color.Transparent)
+    .backgroundColor(this.cellBg(cell))
     .onClick(() => {
       if (cell.day > 0) {
         this.selectedDate = cell.date;
@@ -208,7 +229,7 @@ export struct CalendarTab {
                 GridItem() {
                   this.dayCell(cell)
                 }
-              }, (cell: CalCell, idx: number) => `${idx}-${cell.date}`)
+              }, (cell: CalCell, idx: number) => `${idx}-${cell.date}-${cell.isSelected}`)
             }
             .columnsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr')
             .rowsGap(4)

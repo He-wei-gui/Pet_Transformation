@@ -60,6 +60,7 @@
 
     { "name": "checklist_title", "value": "Today's Tasks" },
     { "name": "checklist_empty", "value": "All clear for today! 🎉" },
+    { "name": "todo_hint", "value": "Enter a task…" },
     { "name": "task_feed", "value": "Feeding" },
     { "name": "task_substrate", "value": "Substrate" },
     { "name": "greeting_fmt", "value": "Hi, %s" },

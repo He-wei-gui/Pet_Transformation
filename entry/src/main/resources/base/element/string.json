@@ -60,6 +60,7 @@
 
     { "name": "checklist_title", "value": "今日待办" },
     { "name": "checklist_empty", "value": "今天没有待办，棒棒哒！" },
+    { "name": "todo_hint", "value": "输入待办内容…" },
     { "name": "task_feed", "value": "喂食" },
     { "name": "task_substrate", "value": "换料" },
     { "name": "greeting_fmt", "value": "%s，你好" },

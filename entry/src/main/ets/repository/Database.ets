@@ -64,6 +64,12 @@ const CREATE_PHOTO: string =
   'pet_id INTEGER NOT NULL, ' +
   'date TEXT, uri TEXT, length_cm REAL, caption TEXT, created_at TEXT)';
 
+const CREATE_TODO: string =
+  'CREATE TABLE IF NOT EXISTS todo (' +
+  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+  'user_id INTEGER NOT NULL, ' +
+  'title TEXT NOT NULL, date TEXT, done INTEGER DEFAULT 0, created_at TEXT)';
+
 /**
  * 本地关系型数据库（SQLite）管理器，单例持有 RdbStore。
  * 须在使用任何 Repository 之前调用 init()（EntryAbility.onCreate 中执行）。
@@ -106,5 +112,6 @@ export class Database {
     await store.executeSql(CREATE_MOLT);
     await store.executeSql(CREATE_ENV);
     await store.executeSql(CREATE_PHOTO);
+    await store.executeSql(CREATE_TODO);
   }
 }
