@@ -11,6 +11,7 @@ import { FormField } from '../../components/FormField';
 import { DateField } from '../../components/DateField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { EmptyState } from '../../components/EmptyState';
+import { Toast, Confirm } from '../../utils/Dialogs';
 
 /**
  * 体重记录页：录入称重 + 历史列表（升序）。
@@ -50,6 +51,7 @@ struct WeightLogPage {
       await PetService.logWeight(this.petId, this.date, Number.parseFloat(this.weightStr));
       this.weightStr = '';
       await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`add weight failed: ${JSON.stringify(err)}`);
     }
@@ -60,6 +62,7 @@ struct WeightLogPage {
     try {
       await WeightLogRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`remove weight failed: ${JSON.stringify(err)}`);
     }
@@ -125,7 +128,9 @@ struct WeightLogPage {
                     .fontSize(16)
                     .margin({ left: $r('app.float.space_lg') })
                     .onClick(() => {
-                      this.remove(log.id);
+                      Confirm.remove(() => {
+                        this.remove(log.id);
+                      });
                     })
                 }
                 .width('100%')

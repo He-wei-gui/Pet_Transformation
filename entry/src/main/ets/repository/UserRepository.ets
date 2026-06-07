@@ -62,4 +62,11 @@ export class UserRepository {
     predicates.equalTo('id', id);
     await Database.getStore().update(vb, predicates);
   }
+
+  static async updatePassword(id: number, passwordHash: string, salt: string): Promise<void> {
+    const vb: relationalStore.ValuesBucket = { 'password_hash': passwordHash, 'salt': salt };
+    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
+    predicates.equalTo('id', id);
+    await Database.getStore().update(vb, predicates);
+  }
 }

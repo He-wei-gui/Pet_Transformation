@@ -6,6 +6,7 @@
     "pages/MainPage",
     "view/pets/PetDetailPage",
     "view/pets/PetEditPage",
+    "view/mine/ProfilePage",
     "view/logs/WeightLogPage",
     "view/logs/FeedLogPage",
     "view/logs/SubstrateLogPage",

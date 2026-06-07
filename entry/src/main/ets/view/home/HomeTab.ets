@@ -10,6 +10,8 @@ import { DateField } from '../../components/DateField';
 import { EmptyState } from '../../components/EmptyState';
 import { DateUtil } from '../../utils/DateUtil';
 import { Logger } from '../../utils/Logger';
+import { Toast, Confirm } from '../../utils/Dialogs';
+import { Urgency } from '../../model/Urgency';
 
 /**
  * 首页：今日待办。自定义待办（可选日期、完成打勾保留）+ 宠物喂食/换料自动任务
@@ -24,6 +26,7 @@ export struct HomeTab {
   @State adding: boolean = false;
   @State newTodo: string = '';
   @State newTodoDate: string = DateUtil.today();
+  @State filterAll: boolean = false;
 
   aboutToAppear(): void {
     this.reload();
@@ -50,6 +53,7 @@ export struct HomeTab {
       this.newTodoDate = DateUtil.today();
       this.adding = false;
       await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`add todo failed: ${JSON.stringify(err)}`);
     }
@@ -68,9 +72,40 @@ export struct HomeTab {
     try {
       await TodoRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`delete todo failed: ${JSON.stringify(err)}`);
     }
+  }
+
+  /** 今日视图仅显示到期(逾期/今日)的宠物任务；全部视图显示所有。 */
+  private displayedEntries(): ChecklistEntry[] {
+    if (this.filterAll) {
+      return this.entries;
+    }
+    const result: ChecklistEntry[] = [];
+    for (let i: number = 0; i < this.entries.length; i++) {
+      const lv: Urgency = this.entries[i].level;
+      if (lv === Urgency.TODAY || lv === Urgency.OVERDUE) {
+        result.push(this.entries[i]);
+      }
+    }
+    return result;
+  }
+
+  /** 今日视图仅显示日期不晚于今天的待办；全部视图显示所有。 */
+  private displayedTodos(): Todo[] {
+    if (this.filterAll) {
+      return this.todos;
+    }
+    const today: string = DateUtil.today();
+    const result: Todo[] = [];
+    for (let i: number = 0; i < this.todos.length; i++) {
+      if (DateUtil.diffDays(this.todos[i].date, today) >= 0) {
+        result.push(this.todos[i]);
+      }
+    }
+    return result;
   }
 
   private petKey(entry: ChecklistEntry): string {
@@ -136,7 +171,9 @@ export struct HomeTab {
       Text('🗑')
         .fontSize(14)
         .onClick(() => {
-          this.deleteTodo(todo.id);
+          Confirm.remove(() => {
+            this.deleteTodo(todo.id);
+          });
         })
     }
     .width('100%')
@@ -144,6 +181,32 @@ export struct HomeTab {
     .backgroundColor($r('app.color.surface'))
     .borderRadius($r('app.float.radius_card'))
     .opacity(todo.done === 1 ? 0.5 : 1)
+  }
+
+  @Builder
+  filterTabs() {
+    Row({ space: 8 }) {
+      Text($r('app.string.filter_today'))
+        .fontSize($r('app.float.font_caption'))
+        .fontColor(this.filterAll ? $r('app.color.text_secondary') : $r('app.color.text_on_brand'))
+        .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+        .borderRadius($r('app.float.radius_pill'))
+        .backgroundColor(this.filterAll ? $r('app.color.input_background') : $r('app.color.brand_primary'))
+        .onClick(() => {
+          this.filterAll = false;
+        })
+      Text($r('app.string.filter_all'))
+        .fontSize($r('app.float.font_caption'))
+        .fontColor(this.filterAll ? $r('app.color.text_on_brand') : $r('app.color.text_secondary'))
+        .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+        .borderRadius($r('app.float.radius_pill'))
+        .backgroundColor(this.filterAll ? $r('app.color.brand_primary') : $r('app.color.input_background'))
+        .onClick(() => {
+          this.filterAll = true;
+        })
+    }
+    .width('100%')
+    .margin({ top: $r('app.float.space_md') })
   }
 
   @Builder
@@ -207,6 +270,7 @@ export struct HomeTab {
         if (this.adding) {
           this.addCard()
         }
+        this.filterTabs()
       }
       .alignItems(HorizontalAlign.Start)
       .width('100%')
@@ -217,17 +281,17 @@ export struct HomeTab {
         bottom: $r('app.float.space_lg')
       })
 
-      if (this.todos.length === 0 && this.entries.length === 0) {
+      if (this.displayedTodos().length === 0 && this.displayedEntries().length === 0) {
         EmptyState({ emoji: '🌿', message: $r('app.string.checklist_empty') })
       } else {
         List({ space: 12 }) {
-          ForEach(this.todos, (todo: Todo) => {
+          ForEach(this.displayedTodos(), (todo: Todo) => {
             ListItem() {
               this.todoRow(todo)
             }
           }, (todo: Todo) => `todo-${todo.id}-${todo.done}`)
 
-          ForEach(this.entries, (item: ChecklistEntry) => {
+          ForEach(this.displayedEntries(), (item: ChecklistEntry) => {
             ListItem() {
               ChecklistItem({
                 entry: item,

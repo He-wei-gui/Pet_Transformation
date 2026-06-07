@@ -1,9 +1,11 @@
 import { router } from '@kit.ArkUI';
 import { Pet } from '../../model/Pet';
 import { WeightLog } from '../../model/WeightLog';
+import { Photo } from '../../model/Photo';
 import { UrgencyInfo } from '../../model/Urgency';
 import { PetService } from '../../service/PetService';
 import { WeightLogRepository } from '../../repository/WeightLogRepository';
+import { PhotoRepository } from '../../repository/PhotoRepository';
 import { RouteConstants, StorageKeys } from '../../constants/RouteConstants';
 import { UrgencyText } from '../../utils/UrgencyText';
 import { I18n } from '../../utils/I18n';
@@ -41,6 +43,7 @@ struct PetDetailPage {
   @State nextFeed: string = '';
   @State nextSub: string = '';
   @State weights: number[] = [];
+  @State lengths: number[] = [];
   @State cats: RecordCat[] = [];
   private petId: number = 0;
 
@@ -78,6 +81,16 @@ struct PetDetailPage {
         values.push(logs[i].weight);
       }
       this.weights = values;
+
+      // 相册按日期倒序，倒着遍历得到升序的体长序列（仅取有体长的记录）
+      const photos: Photo[] = await PhotoRepository.listByPet(this.petId);
+      const lens: number[] = [];
+      for (let i: number = photos.length - 1; i >= 0; i--) {
+        if (photos[i].lengthCm > 0) {
+          lens.push(photos[i].lengthCm);
+        }
+      }
+      this.lengths = lens;
     } catch (err) {
       Logger.error(`load detail failed: ${JSON.stringify(err)}`);
     }
@@ -210,6 +223,18 @@ struct PetDetailPage {
           .padding($r('app.float.space_lg'))
           .backgroundColor($r('app.color.surface'))
           .borderRadius($r('app.float.radius_card'))
+
+          if (this.lengths.length > 0) {
+            Column() {
+              SectionHeader({ title: $r('app.string.detail_length_trend') })
+              WeightChart({ values: this.lengths })
+                .margin({ top: $r('app.float.space_md') })
+            }
+            .width('100%')
+            .padding($r('app.float.space_lg'))
+            .backgroundColor($r('app.color.surface'))
+            .borderRadius($r('app.float.radius_card'))
+          }
 
           SectionHeader({ title: $r('app.string.detail_records') })
           this.recordGrid()

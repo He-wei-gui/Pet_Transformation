@@ -55,4 +55,38 @@ export class AuthService {
   static async logout(): Promise<void> {
     await SessionStore.clear();
   }
+
+  /** 更新昵称与头像，同步刷新会话昵称。 */
+  static async updateProfile(userId: number, nickname: string, avatar: string): Promise<Result<number>> {
+    try {
+      const finalNickname: string = nickname.trim();
+      await UserRepository.updateProfile(userId, finalNickname, avatar);
+      await SessionStore.save(userId, finalNickname);
+      return Result.ok(userId);
+    } catch (err) {
+      Logger.error(`updateProfile failed: ${JSON.stringify(err)}`);
+      return Result.fail('err_register_failed');
+    }
+  }
+
+  /** 修改密码：校验原密码，成功后用新盐重新哈希。 */
+  static async changePassword(userId: number, oldPwd: string, newPwd: string): Promise<Result<number>> {
+    try {
+      const user: User | null = await UserRepository.findById(userId);
+      if (user === null) {
+        return Result.fail('err_login_failed');
+      }
+      const oldHash: string = await Hash.sha256(user.salt, oldPwd);
+      if (oldHash !== user.passwordHash) {
+        return Result.fail('err_old_password');
+      }
+      const salt: string = Hash.generateSalt();
+      const hash: string = await Hash.sha256(salt, newPwd);
+      await UserRepository.updatePassword(userId, hash, salt);
+      return Result.ok(userId);
+    } catch (err) {
+      Logger.error(`changePassword failed: ${JSON.stringify(err)}`);
+      return Result.fail('err_register_failed');
+    }
+  }
 }

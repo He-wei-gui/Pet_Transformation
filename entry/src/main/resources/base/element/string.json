@@ -136,6 +136,24 @@
     { "name": "stats_total_feed", "value": "喂食次数" },
     { "name": "stats_total_weight", "value": "称重次数" },
     { "name": "stats_overdue", "value": "逾期任务" },
-    { "name": "stats_feed_7d", "value": "近 7 天喂食次数" }
+    { "name": "stats_feed_7d", "value": "近 7 天喂食次数" },
+
+    { "name": "toast_added", "value": "已添加" },
+    { "name": "toast_deleted", "value": "已删除" },
+    { "name": "toast_saved", "value": "已保存" },
+    { "name": "confirm_delete_record", "value": "确定删除这条记录吗？" },
+
+    { "name": "profile_edit", "value": "编辑资料" },
+    { "name": "profile_avatar", "value": "头像" },
+    { "name": "change_password", "value": "修改密码" },
+    { "name": "old_password", "value": "原密码" },
+    { "name": "new_password", "value": "新密码" },
+    { "name": "pwd_optional_hint", "value": "不修改密码请留空" },
+    { "name": "err_old_password", "value": "原密码错误" },
+
+    { "name": "filter_today", "value": "今日" },
+    { "name": "filter_all", "value": "全部" },
+
+    { "name": "detail_length_trend", "value": "体长趋势" }
   ]
 }

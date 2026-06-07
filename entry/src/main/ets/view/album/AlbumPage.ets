@@ -10,6 +10,7 @@ import { FormField } from '../../components/FormField';
 import { DateField } from '../../components/DateField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { EmptyState } from '../../components/EmptyState';
+import { Toast, Confirm } from '../../utils/Dialogs';
 
 /**
  * 成长相册页：系统图库选图 → 复制进应用沙箱 → 记录到相册表（含日期/体长/说明）。
@@ -65,6 +66,7 @@ struct AlbumPage {
         this.lengthStr = '';
         this.caption = '';
         await this.reload();
+        Toast.added();
       }
     } catch (err) {
       Logger.error(`pick photo failed: ${JSON.stringify(err)}`);
@@ -76,6 +78,7 @@ struct AlbumPage {
     try {
       await PhotoRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`remove photo failed: ${JSON.stringify(err)}`);
     }
@@ -155,7 +158,9 @@ struct AlbumPage {
                       Text('🗑')
                         .fontSize(14)
                         .onClick(() => {
-                          this.remove(photo.id);
+                          Confirm.remove(() => {
+                            this.remove(photo.id);
+                          });
                         })
                     }
                     .width('100%')

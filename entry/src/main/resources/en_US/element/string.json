@@ -136,6 +136,24 @@
     { "name": "stats_total_feed", "value": "Feedings" },
     { "name": "stats_total_weight", "value": "Weigh-ins" },
     { "name": "stats_overdue", "value": "Overdue" },
-    { "name": "stats_feed_7d", "value": "Feedings (last 7 days)" }
+    { "name": "stats_feed_7d", "value": "Feedings (last 7 days)" },
+
+    { "name": "toast_added", "value": "Added" },
+    { "name": "toast_deleted", "value": "Deleted" },
+    { "name": "toast_saved", "value": "Saved" },
+    { "name": "confirm_delete_record", "value": "Delete this record?" },
+
+    { "name": "profile_edit", "value": "Edit Profile" },
+    { "name": "profile_avatar", "value": "Avatar" },
+    { "name": "change_password", "value": "Change Password" },
+    { "name": "old_password", "value": "Current password" },
+    { "name": "new_password", "value": "New password" },
+    { "name": "pwd_optional_hint", "value": "Leave blank to keep unchanged" },
+    { "name": "err_old_password", "value": "Current password is incorrect" },
+
+    { "name": "filter_today", "value": "Today" },
+    { "name": "filter_all", "value": "All" },
+
+    { "name": "detail_length_trend", "value": "Length Trend" }
   ]
 }

@@ -7,6 +7,7 @@ import { TopBar } from '../../components/TopBar';
 import { DateField } from '../../components/DateField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { EmptyState } from '../../components/EmptyState';
+import { Toast, Confirm } from '../../utils/Dialogs';
 
 const STATUS_START: string = 'start';
 const STATUS_DONE: string = 'done';
@@ -44,6 +45,7 @@ struct MoltLogPage {
         new MoltLog(0, this.petId, this.date, this.status, this.note.trim(), DateUtil.today()));
       this.note = '';
       await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`add molt failed: ${JSON.stringify(err)}`);
     }
@@ -54,6 +56,7 @@ struct MoltLogPage {
     try {
       await MoltLogRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`remove molt failed: ${JSON.stringify(err)}`);
     }
@@ -146,7 +149,9 @@ struct MoltLogPage {
                   Text('🗑')
                     .fontSize(16)
                     .onClick(() => {
-                      this.remove(log.id);
+                      Confirm.remove(() => {
+                        this.remove(log.id);
+                      });
                     })
                 }
                 .width('100%')

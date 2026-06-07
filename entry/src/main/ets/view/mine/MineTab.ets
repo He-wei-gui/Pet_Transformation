@@ -5,6 +5,9 @@ import { SessionStore } from '../../service/SessionStore';
 import { ThemeService } from '../../service/ThemeService';
 import { LocaleService } from '../../service/LocaleService';
 import { RouteConstants } from '../../constants/RouteConstants';
+import { UserRepository } from '../../repository/UserRepository';
+import { User } from '../../model/User';
+import { PetAvatar } from '../../components/PetAvatar';
 import { Logger } from '../../utils/Logger';
 
 /**
@@ -15,6 +18,7 @@ export struct MineTab {
   @Prop @Watch('reload') tick: number = 0;
   @State nickname: string = '';
   @State petCount: number = 0;
+  @State avatar: string = '😀';
   @State darkMode: boolean = false;
   @State english: boolean = false;
 
@@ -43,6 +47,8 @@ export struct MineTab {
       this.nickname = SessionStore.currentNickname();
       this.petCount = (await PetService.listPets()).length;
       this.darkMode = ThemeService.isDark();
+      const user: User | null = await UserRepository.findById(SessionStore.currentUserId());
+      this.avatar = (user !== null && user.avatar.length > 0) ? user.avatar : '😀';
     } catch (err) {
       Logger.error(`load mine failed: ${JSON.stringify(err)}`);
     }
@@ -58,13 +64,7 @@ export struct MineTab {
   build() {
     Column() {
       Column() {
-        Stack() {
-          Text('👤').fontSize(44)
-        }
-        .width(88)
-        .height(88)
-        .borderRadius(44)
-        .backgroundColor($r('app.color.surface'))
+        PetAvatar({ avatar: this.avatar, diameter: 88 })
 
         Text(this.nickname)
           .fontSize($r('app.float.font_title'))
@@ -95,6 +95,27 @@ export struct MineTab {
         .margin({ top: $r('app.float.space_lg') })
         .backgroundColor($r('app.color.surface'))
         .borderRadius($r('app.float.radius_card'))
+
+        Row() {
+          Text('✏️')
+            .fontSize(18)
+          Text($r('app.string.profile_edit'))
+            .fontSize($r('app.float.font_body'))
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .margin({ left: $r('app.float.space_md') })
+          Text('›')
+            .fontSize(22)
+            .fontColor($r('app.color.text_secondary'))
+        }
+        .width('100%')
+        .padding($r('app.float.space_lg'))
+        .margin({ top: $r('app.float.space_md') })
+        .backgroundColor($r('app.color.surface'))
+        .borderRadius($r('app.float.radius_card'))
+        .onClick(() => {
+          router.pushUrl({ url: RouteConstants.PROFILE });
+        })
 
         Row() {
           Text('🌙')

@@ -11,6 +11,7 @@ import { FormField } from '../../components/FormField';
 import { DateField } from '../../components/DateField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { EmptyState } from '../../components/EmptyState';
+import { Toast, Confirm } from '../../utils/Dialogs';
 
 /**
  * 换料记录页：录入换料（同步重算下次换料日）+ 历史列表（倒序）。
@@ -52,6 +53,7 @@ struct SubstrateLogPage {
       this.substrateType = '';
       this.note = '';
       await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`add substrate failed: ${JSON.stringify(err)}`);
     }
@@ -62,6 +64,7 @@ struct SubstrateLogPage {
     try {
       await SubstrateLogRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`remove substrate failed: ${JSON.stringify(err)}`);
     }
@@ -136,7 +139,9 @@ struct SubstrateLogPage {
                   Text('🗑')
                     .fontSize(16)
                     .onClick(() => {
-                      this.remove(log.id);
+                      Confirm.remove(() => {
+                        this.remove(log.id);
+                      });
                     })
                 }
                 .width('100%')

@@ -11,6 +11,7 @@ import { FormField } from '../../components/FormField';
 import { DateField } from '../../components/DateField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { EmptyState } from '../../components/EmptyState';
+import { Toast, Confirm } from '../../utils/Dialogs';
 
 /**
  * 喂食记录页：录入喂食（同步重算下次喂食日）+ 历史列表（倒序）。
@@ -54,6 +55,7 @@ struct FeedLogPage {
       this.amount = '';
       this.note = '';
       await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`add feed failed: ${JSON.stringify(err)}`);
     }
@@ -64,6 +66,7 @@ struct FeedLogPage {
     try {
       await FeedLogRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`remove feed failed: ${JSON.stringify(err)}`);
     }
@@ -146,7 +149,9 @@ struct FeedLogPage {
                   Text('🗑')
                     .fontSize(16)
                     .onClick(() => {
-                      this.remove(log.id);
+                      Confirm.remove(() => {
+                        this.remove(log.id);
+                      });
                     })
                 }
                 .width('100%')

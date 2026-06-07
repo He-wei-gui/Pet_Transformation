@@ -12,6 +12,7 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { EmptyState } from '../../components/EmptyState';
 import { WeightChart } from '../../components/WeightChart';
 import { SectionHeader } from '../../components/SectionHeader';
+import { Toast, Confirm } from '../../utils/Dialogs';
 
 /**
  * 环境记录页：录入温度/湿度/UVB + 温度趋势曲线 + 历史列表。
@@ -70,6 +71,7 @@ struct EnvLogPage {
       this.uvbStr = '';
       this.note = '';
       await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`add env failed: ${JSON.stringify(err)}`);
     }
@@ -80,6 +82,7 @@ struct EnvLogPage {
     try {
       await EnvLogRepository.remove(id);
       await this.reload();
+      Toast.deleted();
     } catch (err) {
       Logger.error(`remove env failed: ${JSON.stringify(err)}`);
     }
@@ -177,7 +180,9 @@ struct EnvLogPage {
                   Text('🗑')
                     .fontSize(16)
                     .onClick(() => {
-                      this.remove(log.id);
+                      Confirm.remove(() => {
+                        this.remove(log.id);
+                      });
                     })
                 }
                 .width('100%')

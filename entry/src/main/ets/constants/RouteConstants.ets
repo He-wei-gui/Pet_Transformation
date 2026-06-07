@@ -10,6 +10,7 @@ export class RouteConstants {
 
   static readonly PET_DETAIL: string = 'view/pets/PetDetailPage';
   static readonly PET_EDIT: string = 'view/pets/PetEditPage';
+  static readonly PROFILE: string = 'view/mine/ProfilePage';
 
   static readonly WEIGHT_LOG: string = 'view/logs/WeightLogPage';
   static readonly FEED_LOG: string = 'view/logs/FeedLogPage';
