@@ -3,6 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { Database } from '../repository/Database';
 import { SessionStore } from '../service/SessionStore';
+import { ThemeService } from '../service/ThemeService';
 
 const DOMAIN = 0x0000;
 
@@ -28,6 +29,7 @@ export default class EntryAbility extends UIAbility {
       await Database.init(this.context);
       await SessionStore.init(this.context);
       await SessionStore.restoreToAppStorage();
+      await ThemeService.init(this.context);
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', 'Failed to init app data. Cause: %{public}s', JSON.stringify(err));
     }

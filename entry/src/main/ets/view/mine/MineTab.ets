@@ -2,6 +2,7 @@ import { router } from '@kit.ArkUI';
 import { PetService } from '../../service/PetService';
 import { AuthService } from '../../service/AuthService';
 import { SessionStore } from '../../service/SessionStore';
+import { ThemeService } from '../../service/ThemeService';
 import { RouteConstants } from '../../constants/RouteConstants';
 import { Logger } from '../../utils/Logger';
 
@@ -13,8 +14,10 @@ export struct MineTab {
   @Prop @Watch('reload') tick: number = 0;
   @State nickname: string = '';
   @State petCount: number = 0;
+  @State darkMode: boolean = false;
 
   aboutToAppear(): void {
+    this.darkMode = ThemeService.isDark();
     this.reload();
   }
 
@@ -22,6 +25,7 @@ export struct MineTab {
     try {
       this.nickname = SessionStore.currentNickname();
       this.petCount = (await PetService.listPets()).length;
+      this.darkMode = ThemeService.isDark();
     } catch (err) {
       Logger.error(`load mine failed: ${JSON.stringify(err)}`);
     }
@@ -72,6 +76,27 @@ export struct MineTab {
         .width('100%')
         .padding($r('app.float.space_xl'))
         .margin({ top: $r('app.float.space_lg') })
+        .backgroundColor($r('app.color.surface'))
+        .borderRadius($r('app.float.radius_card'))
+
+        Row() {
+          Text('🌙')
+            .fontSize(18)
+          Text($r('app.string.mine_theme'))
+            .fontSize($r('app.float.font_body'))
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .margin({ left: $r('app.float.space_md') })
+          Toggle({ type: ToggleType.Switch, isOn: this.darkMode })
+            .selectedColor($r('app.color.brand_primary'))
+            .onChange((isOn: boolean) => {
+              this.darkMode = isOn;
+              ThemeService.setDark(getContext(this), isOn);
+            })
+        }
+        .width('100%')
+        .padding($r('app.float.space_lg'))
+        .margin({ top: $r('app.float.space_md') })
         .backgroundColor($r('app.color.surface'))
         .borderRadius($r('app.float.radius_card'))
 
