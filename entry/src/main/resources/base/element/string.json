@@ -63,6 +63,7 @@
     { "name": "todo_hint", "value": "输入待办内容…" },
     { "name": "task_feed", "value": "喂食" },
     { "name": "task_substrate", "value": "换料" },
+    { "name": "task_done", "value": "已完成" },
     { "name": "greeting_fmt", "value": "%s，你好" },
 
     { "name": "pets_title", "value": "我的宠物" },

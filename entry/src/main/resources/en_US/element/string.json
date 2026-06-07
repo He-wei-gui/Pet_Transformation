@@ -63,6 +63,7 @@
     { "name": "todo_hint", "value": "Enter a task…" },
     { "name": "task_feed", "value": "Feeding" },
     { "name": "task_substrate", "value": "Substrate" },
+    { "name": "task_done", "value": "Done" },
     { "name": "greeting_fmt", "value": "Hi, %s" },
 
     { "name": "pets_title", "value": "My Pets" },

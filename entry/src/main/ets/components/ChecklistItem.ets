@@ -48,7 +48,6 @@ export struct ChecklistItem {
           .fontSize($r('app.float.font_body'))
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
-          .decoration({ type: this.done ? TextDecorationType.LineThrough : TextDecorationType.None })
         Row() {
           Text(this.taskLabel())
             .fontSize($r('app.float.font_small'))
@@ -67,7 +66,17 @@ export struct ChecklistItem {
         this.onTap();
       })
 
-      if (!this.done) {
+      if (this.done) {
+        Row() {
+          Text('✓')
+            .fontSize($r('app.float.font_small'))
+            .fontColor($r('app.color.urgency_upcoming'))
+          Text($r('app.string.task_done'))
+            .fontSize($r('app.float.font_small'))
+            .fontColor($r('app.color.urgency_upcoming'))
+            .margin({ left: 2 })
+        }
+      } else {
         UrgencyTag({
           level: this.entry.level,
           text: UrgencyText.label(getContext(this), new UrgencyInfo(this.entry.level, this.entry.days))
