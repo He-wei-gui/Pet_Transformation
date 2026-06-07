@@ -3,6 +3,14 @@
     "pages/Index",
     "pages/LoginPage",
     "pages/RegisterPage",
-    "pages/MainPage"
+    "pages/MainPage",
+    "view/pets/PetDetailPage",
+    "view/pets/PetEditPage",
+    "view/logs/WeightLogPage",
+    "view/logs/FeedLogPage",
+    "view/logs/SubstrateLogPage",
+    "view/logs/MoltLogPage",
+    "view/logs/EnvLogPage",
+    "view/album/AlbumPage"
   ]
 }

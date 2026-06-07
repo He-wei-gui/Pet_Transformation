@@ -30,6 +30,7 @@
     { "name": "common_delete", "value": "删除" },
     { "name": "common_confirm", "value": "确定" },
     { "name": "common_add", "value": "添加" },
+    { "name": "common_edit_short", "value": "编辑" },
     { "name": "empty_default", "value": "暂无数据" },
 
     { "name": "hint_username", "value": "请输入用户名" },
@@ -51,6 +52,58 @@
     { "name": "err_username_taken", "value": "用户名已被占用" },
     { "name": "err_register_failed", "value": "注册失败，请稍后重试" },
     { "name": "err_login_invalid", "value": "用户名或密码错误" },
-    { "name": "err_login_failed", "value": "登录失败，请稍后重试" }
+    { "name": "err_login_failed", "value": "登录失败，请稍后重试" },
+
+    { "name": "urgency_today", "value": "今日待办" },
+    { "name": "urgency_overdue_fmt", "value": "已逾期 %d 天" },
+    { "name": "urgency_upcoming_fmt", "value": "还有 %d 天" },
+
+    { "name": "checklist_title", "value": "今日待办" },
+    { "name": "checklist_empty", "value": "今天没有待办，棒棒哒！" },
+    { "name": "task_feed", "value": "喂食" },
+    { "name": "task_substrate", "value": "换料" },
+    { "name": "greeting_fmt", "value": "%s，你好" },
+
+    { "name": "pets_title", "value": "我的宠物" },
+    { "name": "pets_empty", "value": "还没有宠物，添加一只开始记录吧" },
+    { "name": "pet_add", "value": "添加宠物" },
+    { "name": "pet_edit", "value": "编辑宠物" },
+    { "name": "pet_name", "value": "名字" },
+    { "name": "pet_species", "value": "物种" },
+    { "name": "pet_birthdate", "value": "出生日期" },
+    { "name": "pet_feed_interval", "value": "喂食间隔（天）" },
+    { "name": "pet_sub_interval", "value": "换料间隔（天）" },
+    { "name": "pet_note", "value": "备注" },
+    { "name": "pet_avatar_hint", "value": "选择一个图标" },
+    { "name": "confirm_delete_pet", "value": "确定删除该宠物及其全部记录？" },
+
+    { "name": "next_feed", "value": "下次喂食" },
+    { "name": "next_substrate", "value": "下次换料" },
+    { "name": "detail_weight_trend", "value": "体重趋势" },
+    { "name": "detail_records", "value": "记录类别" },
+    { "name": "detail_basic", "value": "基本信息" },
+
+    { "name": "record_weight", "value": "称重" },
+    { "name": "record_feed", "value": "喂食" },
+    { "name": "record_substrate", "value": "换料" },
+    { "name": "record_molt", "value": "蜕皮" },
+    { "name": "record_env", "value": "环境" },
+    { "name": "record_album", "value": "相册" },
+
+    { "name": "weight_log_title", "value": "体重记录" },
+    { "name": "weight_value", "value": "体重（g）" },
+    { "name": "feed_log_title", "value": "喂食记录" },
+    { "name": "food_type", "value": "食物种类" },
+    { "name": "food_amount", "value": "份量" },
+    { "name": "substrate_log_title", "value": "换料记录" },
+    { "name": "substrate_type", "value": "垫材类型" },
+    { "name": "date_label", "value": "日期" },
+    { "name": "chart_empty", "value": "暂无数据，添加记录后查看曲线" },
+
+    { "name": "mine_logout", "value": "退出登录" },
+    { "name": "mine_stat_pets", "value": "宠物" },
+    { "name": "mine_stat_records", "value": "记录" },
+    { "name": "mine_theme", "value": "深色主题" },
+    { "name": "coming_soon", "value": "敬请期待" }
   ]
 }

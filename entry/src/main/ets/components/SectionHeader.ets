@@ -3,8 +3,9 @@
  */
 @Component
 export struct SectionHeader {
-  @Prop title: string = '';
-  @Prop action: string = '';
+  @Prop title: ResourceStr = '';
+  @Prop action: ResourceStr = '';
+  @Prop showAction: boolean = false;
   onAction: () => void = () => {};
 
   build() {
@@ -15,7 +16,7 @@ export struct SectionHeader {
         .fontColor($r('app.color.text_primary'))
         .layoutWeight(1)
 
-      if (this.action.length > 0) {
+      if (this.showAction) {
         Text(this.action)
           .fontSize($r('app.float.font_caption'))
           .fontColor($r('app.color.brand_primary'))

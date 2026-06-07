@@ -4,8 +4,9 @@
 @Component
 export struct EmptyState {
   @Prop emoji: string = '🦎';
-  @Prop message: string = '暂无数据';
-  @Prop actionLabel: string = '';
+  @Prop message: ResourceStr = '';
+  @Prop actionLabel: ResourceStr = '';
+  @Prop showAction: boolean = false;
   onAction: () => void = () => {};
 
   build() {
@@ -17,7 +18,7 @@ export struct EmptyState {
         .fontSize($r('app.float.font_caption'))
         .fontColor($r('app.color.text_secondary'))
 
-      if (this.actionLabel.length > 0) {
+      if (this.showAction) {
         Button(this.actionLabel)
           .type(ButtonType.Capsule)
           .fontColor($r('app.color.text_on_brand'))

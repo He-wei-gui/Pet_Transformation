@@ -30,6 +30,7 @@
     { "name": "common_delete", "value": "Delete" },
     { "name": "common_confirm", "value": "Confirm" },
     { "name": "common_add", "value": "Add" },
+    { "name": "common_edit_short", "value": "Edit" },
     { "name": "empty_default", "value": "No data yet" },
 
     { "name": "hint_username", "value": "Enter your username" },
@@ -51,6 +52,58 @@
     { "name": "err_username_taken", "value": "Username already taken" },
     { "name": "err_register_failed", "value": "Registration failed, please try again" },
     { "name": "err_login_invalid", "value": "Incorrect username or password" },
-    { "name": "err_login_failed", "value": "Login failed, please try again" }
+    { "name": "err_login_failed", "value": "Login failed, please try again" },
+
+    { "name": "urgency_today", "value": "Due today" },
+    { "name": "urgency_overdue_fmt", "value": "Overdue %d days" },
+    { "name": "urgency_upcoming_fmt", "value": "%d days left" },
+
+    { "name": "checklist_title", "value": "Today's Tasks" },
+    { "name": "checklist_empty", "value": "All clear for today! 🎉" },
+    { "name": "task_feed", "value": "Feeding" },
+    { "name": "task_substrate", "value": "Substrate" },
+    { "name": "greeting_fmt", "value": "Hi, %s" },
+
+    { "name": "pets_title", "value": "My Pets" },
+    { "name": "pets_empty", "value": "No pets yet. Add one to start tracking." },
+    { "name": "pet_add", "value": "Add Pet" },
+    { "name": "pet_edit", "value": "Edit Pet" },
+    { "name": "pet_name", "value": "Name" },
+    { "name": "pet_species", "value": "Species" },
+    { "name": "pet_birthdate", "value": "Birth date" },
+    { "name": "pet_feed_interval", "value": "Feeding interval (days)" },
+    { "name": "pet_sub_interval", "value": "Substrate interval (days)" },
+    { "name": "pet_note", "value": "Notes" },
+    { "name": "pet_avatar_hint", "value": "Pick an icon" },
+    { "name": "confirm_delete_pet", "value": "Delete this pet and all its records?" },
+
+    { "name": "next_feed", "value": "Next feeding" },
+    { "name": "next_substrate", "value": "Next substrate" },
+    { "name": "detail_weight_trend", "value": "Weight Trend" },
+    { "name": "detail_records", "value": "Records" },
+    { "name": "detail_basic", "value": "Basic Info" },
+
+    { "name": "record_weight", "value": "Weight" },
+    { "name": "record_feed", "value": "Feeding" },
+    { "name": "record_substrate", "value": "Substrate" },
+    { "name": "record_molt", "value": "Molting" },
+    { "name": "record_env", "value": "Environment" },
+    { "name": "record_album", "value": "Album" },
+
+    { "name": "weight_log_title", "value": "Weight Log" },
+    { "name": "weight_value", "value": "Weight (g)" },
+    { "name": "feed_log_title", "value": "Feeding Log" },
+    { "name": "food_type", "value": "Food type" },
+    { "name": "food_amount", "value": "Amount" },
+    { "name": "substrate_log_title", "value": "Substrate Log" },
+    { "name": "substrate_type", "value": "Substrate type" },
+    { "name": "date_label", "value": "Date" },
+    { "name": "chart_empty", "value": "No data yet. Add records to see the trend." },
+
+    { "name": "mine_logout", "value": "Log Out" },
+    { "name": "mine_stat_pets", "value": "Pets" },
+    { "name": "mine_stat_records", "value": "Records" },
+    { "name": "mine_theme", "value": "Dark theme" },
+    { "name": "coming_soon", "value": "Coming soon" }
   ]
 }

@@ -10,16 +10,14 @@ export enum Urgency {
 }
 
 /**
- * 紧急度计算结果，封装等级、展示文案与剩余/逾期天数。
+ * 紧急度计算结果，封装等级与剩余/逾期天数（文案在 UI 层按语言格式化）。
  */
 export class UrgencyInfo {
   readonly level: Urgency;
-  readonly label: string;
   readonly days: number;
 
-  constructor(level: Urgency, label: string, days: number) {
+  constructor(level: Urgency, days: number) {
     this.level = level;
-    this.label = label;
     this.days = days;
   }
 
@@ -27,11 +25,11 @@ export class UrgencyInfo {
   static evaluate(nextDate: string): UrgencyInfo {
     const delta: number = DateUtil.diffDays(DateUtil.today(), nextDate);
     if (delta === 0) {
-      return new UrgencyInfo(Urgency.TODAY, '今日待办', 0);
+      return new UrgencyInfo(Urgency.TODAY, 0);
     }
     if (delta < 0) {
-      return new UrgencyInfo(Urgency.OVERDUE, `已逾期 ${-delta} 天`, -delta);
+      return new UrgencyInfo(Urgency.OVERDUE, -delta);
     }
-    return new UrgencyInfo(Urgency.UPCOMING, `还有 ${delta} 天`, delta);
+    return new UrgencyInfo(Urgency.UPCOMING, delta);
   }
 }
