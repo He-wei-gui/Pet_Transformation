@@ -4,7 +4,6 @@ import { PetService } from '../../service/PetService';
 import { RouteConstants, StorageKeys } from '../../constants/RouteConstants';
 import { PetCard } from '../../components/PetCard';
 import { EmptyState } from '../../components/EmptyState';
-import { SectionHeader } from '../../components/SectionHeader';
 import { Logger } from '../../utils/Logger';
 
 /**
@@ -35,9 +34,14 @@ export struct PetListTab {
   build() {
     Column() {
       Row() {
-        SectionHeader({ title: $r('app.string.pets_title') })
+        Text($r('app.string.pets_title'))
+          .fontSize($r('app.float.font_subtitle'))
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
+          .layoutWeight(1)
         Text('＋')
-          .fontSize(28)
+          .fontSize(30)
+          .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.brand_primary'))
           .onClick(() => {
             this.gotoEdit(0);

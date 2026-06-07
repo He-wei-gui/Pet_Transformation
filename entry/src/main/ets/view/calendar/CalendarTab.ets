@@ -1,4 +1,5 @@
 import { promptAction } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 import { Pet } from '../../model/Pet';
 import { ChecklistEntry } from '../../model/ChecklistEntry';
 import { Urgency } from '../../model/Urgency';
@@ -107,7 +108,7 @@ export struct CalendarTab {
   }
 
   private async remindToday(): Promise<void> {
-    const ctx = getContext(this);
+    const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     let dueCount: number = 0;
     for (let i: number = 0; i < this.allEntries.length; i++) {
       const level: Urgency = this.allEntries[i].level;
@@ -121,8 +122,8 @@ export struct CalendarTab {
     }
     const title: string = I18n.t(ctx, 'reminder_title');
     const body: string = I18n.t(ctx, 'reminder_body_fmt').replace('%d', `${dueCount}`);
-    const ok: boolean = await ReminderService.remind(title, body);
-    promptAction.showToast({ message: ok ? I18n.t(ctx, 'reminder_sent') : I18n.t(ctx, 'err_login_failed') });
+    const ok: boolean = await ReminderService.remind(ctx, title, body);
+    promptAction.showToast({ message: ok ? I18n.t(ctx, 'reminder_sent') : I18n.t(ctx, 'reminder_failed') });
   }
 
   @Builder

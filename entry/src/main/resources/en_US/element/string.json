@@ -104,6 +104,7 @@
     { "name": "mine_stat_pets", "value": "Pets" },
     { "name": "mine_stat_records", "value": "Records" },
     { "name": "mine_theme", "value": "Dark theme" },
+    { "name": "mine_language", "value": "Language" },
     { "name": "coming_soon", "value": "Coming soon" },
 
     { "name": "molt_status", "value": "Molt status" },
@@ -125,6 +126,7 @@
     { "name": "reminder_body_fmt", "value": "You have %d pet tasks" },
     { "name": "reminder_sent", "value": "Reminder sent" },
     { "name": "reminder_none", "value": "Nothing due today" },
+    { "name": "reminder_failed", "value": "Failed. Enable notifications in Settings." },
     { "name": "weekdays", "value": "S,M,T,W,T,F,S" },
 
     { "name": "stats_overview", "value": "Overview" },

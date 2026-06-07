@@ -1,13 +1,19 @@
 import { notificationManager } from '@kit.NotificationKit';
+import { common } from '@kit.AbilityKit';
 import { Logger } from '../utils/Logger';
 
 /**
  * 本地提醒：把今日待办以系统通知形式推送给用户。
- * 若系统未授予通知权限，publish 会失败，此处返回 false 由 UI 提示。
+ * 首次会申请通知授权；若用户未开启通知，publish 失败并返回 false 由 UI 提示。
  */
 export class ReminderService {
-  static async remind(title: string, body: string): Promise<boolean> {
+  static async remind(context: common.UIAbilityContext, title: string, body: string): Promise<boolean> {
     try {
+      try {
+        await notificationManager.requestEnableNotification(context);
+      } catch (authErr) {
+        Logger.warn(`requestEnableNotification: ${JSON.stringify(authErr)}`);
+      }
       const request: notificationManager.NotificationRequest = {
         id: 1,
         content: {

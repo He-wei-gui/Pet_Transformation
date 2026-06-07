@@ -104,6 +104,7 @@
     { "name": "mine_stat_pets", "value": "宠物" },
     { "name": "mine_stat_records", "value": "记录" },
     { "name": "mine_theme", "value": "深色主题" },
+    { "name": "mine_language", "value": "语言" },
     { "name": "coming_soon", "value": "敬请期待" },
 
     { "name": "molt_status", "value": "蜕皮状态" },
@@ -125,6 +126,7 @@
     { "name": "reminder_body_fmt", "value": "你有 %d 项宠物待办" },
     { "name": "reminder_sent", "value": "提醒已发送" },
     { "name": "reminder_none", "value": "今天没有待办" },
+    { "name": "reminder_failed", "value": "发送失败，请在系统设置中开启通知" },
     { "name": "weekdays", "value": "日,一,二,三,四,五,六" },
 
     { "name": "stats_overview", "value": "数据概览" },

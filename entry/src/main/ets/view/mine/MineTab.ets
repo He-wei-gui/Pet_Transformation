@@ -3,6 +3,7 @@ import { PetService } from '../../service/PetService';
 import { AuthService } from '../../service/AuthService';
 import { SessionStore } from '../../service/SessionStore';
 import { ThemeService } from '../../service/ThemeService';
+import { LocaleService } from '../../service/LocaleService';
 import { RouteConstants } from '../../constants/RouteConstants';
 import { Logger } from '../../utils/Logger';
 
@@ -15,10 +16,26 @@ export struct MineTab {
   @State nickname: string = '';
   @State petCount: number = 0;
   @State darkMode: boolean = false;
+  @State english: boolean = false;
 
   aboutToAppear(): void {
     this.darkMode = ThemeService.isDark();
+    this.english = LocaleService.isEnglish();
     this.reload();
+  }
+
+  @Builder
+  langButton(label: string, isEnglish: boolean) {
+    Text(label)
+      .fontSize($r('app.float.font_caption'))
+      .fontColor(this.english === isEnglish ? $r('app.color.text_on_brand') : $r('app.color.text_secondary'))
+      .padding({ left: 14, right: 14, top: 6, bottom: 6 })
+      .borderRadius($r('app.float.radius_pill'))
+      .backgroundColor(this.english === isEnglish ? $r('app.color.brand_primary') : $r('app.color.input_background'))
+      .onClick(() => {
+        this.english = isEnglish;
+        LocaleService.setEnglish(isEnglish);
+      })
   }
 
   private async reload(): Promise<void> {
@@ -93,6 +110,25 @@ export struct MineTab {
               this.darkMode = isOn;
               ThemeService.setDark(getContext(this), isOn);
             })
+        }
+        .width('100%')
+        .padding($r('app.float.space_lg'))
+        .margin({ top: $r('app.float.space_md') })
+        .backgroundColor($r('app.color.surface'))
+        .borderRadius($r('app.float.radius_card'))
+
+        Row() {
+          Text('🌐')
+            .fontSize(18)
+          Text($r('app.string.mine_language'))
+            .fontSize($r('app.float.font_body'))
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .margin({ left: $r('app.float.space_md') })
+          Row({ space: 8 }) {
+            this.langButton('中文', false)
+            this.langButton('EN', true)
+          }
         }
         .width('100%')
         .padding($r('app.float.space_lg'))
