@@ -1,0 +1,17 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/LoginPage",
+    "pages/RegisterPage",
+    "pages/MainPage",
+    "view/pets/PetDetailPage",
+    "view/pets/PetEditPage",
+    "view/mine/ProfilePage",
+    "view/logs/WeightLogPage",
+    "view/logs/FeedLogPage",
+    "view/logs/SubstrateLogPage",
+    "view/logs/MoltLogPage",
+    "view/logs/EnvLogPage",
+    "view/album/AlbumPage"
+  ]
+}

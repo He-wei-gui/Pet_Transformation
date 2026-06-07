@@ -1,0 +1,96 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#F7F6F1"
+    },
+    {
+      "name": "brand_primary",
+      "value": "#2E7D52"
+    },
+    {
+      "name": "brand_primary_dark",
+      "value": "#1B5E3A"
+    },
+    {
+      "name": "brand_secondary",
+      "value": "#C8A06A"
+    },
+    {
+      "name": "brand_accent",
+      "value": "#6FBF73"
+    },
+    {
+      "name": "page_background",
+      "value": "#F7F6F1"
+    },
+    {
+      "name": "surface",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "surface_alt",
+      "value": "#EFEEE7"
+    },
+    {
+      "name": "text_primary",
+      "value": "#1F2A24"
+    },
+    {
+      "name": "text_secondary",
+      "value": "#6B7A70"
+    },
+    {
+      "name": "text_on_brand",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "divider",
+      "value": "#E3E6E0"
+    },
+    {
+      "name": "urgency_today",
+      "value": "#E8893B"
+    },
+    {
+      "name": "urgency_overdue",
+      "value": "#D9534F"
+    },
+    {
+      "name": "urgency_upcoming",
+      "value": "#4CAF7D"
+    },
+    {
+      "name": "urgency_today_bg",
+      "value": "#FBEAD9"
+    },
+    {
+      "name": "urgency_overdue_bg",
+      "value": "#F7DEDD"
+    },
+    {
+      "name": "urgency_upcoming_bg",
+      "value": "#DEF1E7"
+    },
+    {
+      "name": "chart_grid",
+      "value": "#E3E6E0"
+    },
+    {
+      "name": "chart_line",
+      "value": "#2E7D52"
+    },
+    {
+      "name": "chart_fill",
+      "value": "#9FD8B4"
+    },
+    {
+      "name": "shadow",
+      "value": "#1A1F2A24"
+    },
+    {
+      "name": "input_background",
+      "value": "#F1F2EC"
+    }
+  ]
+}
