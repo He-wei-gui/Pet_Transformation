@@ -104,6 +104,34 @@
     { "name": "mine_stat_pets", "value": "Pets" },
     { "name": "mine_stat_records", "value": "Records" },
     { "name": "mine_theme", "value": "Dark theme" },
-    { "name": "coming_soon", "value": "Coming soon" }
+    { "name": "coming_soon", "value": "Coming soon" },
+
+    { "name": "molt_status", "value": "Molt status" },
+    { "name": "molt_start", "value": "Started" },
+    { "name": "molt_done", "value": "Completed" },
+
+    { "name": "env_temp", "value": "Temperature (℃)" },
+    { "name": "env_humidity", "value": "Humidity (%)" },
+    { "name": "env_uvb", "value": "UVB index" },
+    { "name": "env_temp_trend", "value": "Temperature Trend" },
+
+    { "name": "album_add", "value": "Add Photo" },
+    { "name": "photo_length", "value": "Length (cm)" },
+    { "name": "photo_caption", "value": "Caption" },
+    { "name": "album_empty", "value": "No photos yet. Capture the first moment!" },
+
+    { "name": "calendar_reminder", "value": "Remind me of today" },
+    { "name": "reminder_title", "value": "Today's Tasks" },
+    { "name": "reminder_body_fmt", "value": "You have %d pet tasks" },
+    { "name": "reminder_sent", "value": "Reminder sent" },
+    { "name": "reminder_none", "value": "Nothing due today" },
+    { "name": "weekdays", "value": "S,M,T,W,T,F,S" },
+
+    { "name": "stats_overview", "value": "Overview" },
+    { "name": "stats_total_pets", "value": "Pets" },
+    { "name": "stats_total_feed", "value": "Feedings" },
+    { "name": "stats_total_weight", "value": "Weigh-ins" },
+    { "name": "stats_overdue", "value": "Overdue" },
+    { "name": "stats_feed_7d", "value": "Feedings (last 7 days)" }
   ]
 }

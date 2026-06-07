@@ -104,6 +104,34 @@
     { "name": "mine_stat_pets", "value": "宠物" },
     { "name": "mine_stat_records", "value": "记录" },
     { "name": "mine_theme", "value": "深色主题" },
-    { "name": "coming_soon", "value": "敬请期待" }
+    { "name": "coming_soon", "value": "敬请期待" },
+
+    { "name": "molt_status", "value": "蜕皮状态" },
+    { "name": "molt_start", "value": "开始蜕皮" },
+    { "name": "molt_done", "value": "完成蜕皮" },
+
+    { "name": "env_temp", "value": "温度（℃）" },
+    { "name": "env_humidity", "value": "湿度（%）" },
+    { "name": "env_uvb", "value": "UVB 指数" },
+    { "name": "env_temp_trend", "value": "温度趋势" },
+
+    { "name": "album_add", "value": "添加照片" },
+    { "name": "photo_length", "value": "体长（cm）" },
+    { "name": "photo_caption", "value": "说明" },
+    { "name": "album_empty", "value": "还没有照片，记录第一张成长瞬间吧" },
+
+    { "name": "calendar_reminder", "value": "提醒今日待办" },
+    { "name": "reminder_title", "value": "今日待办" },
+    { "name": "reminder_body_fmt", "value": "你有 %d 项宠物待办" },
+    { "name": "reminder_sent", "value": "提醒已发送" },
+    { "name": "reminder_none", "value": "今天没有待办" },
+    { "name": "weekdays", "value": "日,一,二,三,四,五,六" },
+
+    { "name": "stats_overview", "value": "数据概览" },
+    { "name": "stats_total_pets", "value": "宠物" },
+    { "name": "stats_total_feed", "value": "喂食次数" },
+    { "name": "stats_total_weight", "value": "称重次数" },
+    { "name": "stats_overdue", "value": "逾期任务" },
+    { "name": "stats_feed_7d", "value": "近 7 天喂食次数" }
   ]
 }
