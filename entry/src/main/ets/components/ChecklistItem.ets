@@ -48,16 +48,16 @@ export struct ChecklistItem {
           .fontSize($r('app.float.font_body'))
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
-        Row() {
-          Text(this.taskLabel())
-            .fontSize($r('app.float.font_small'))
-            .fontColor($r('app.color.text_secondary'))
-          Text(this.entry.date)
-            .fontSize($r('app.float.font_small'))
-            .fontColor($r('app.color.text_secondary'))
-            .margin({ left: $r('app.float.space_sm') })
-        }
-        .margin({ top: 2 })
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .width('100%')
+        Text(this.taskLabel())
+          .fontSize($r('app.float.font_small'))
+          .fontColor($r('app.color.text_secondary'))
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .width('100%')
+          .margin({ top: 2 })
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
@@ -76,11 +76,15 @@ export struct ChecklistItem {
             .fontColor($r('app.color.urgency_upcoming'))
             .margin({ left: 2 })
         }
+        .flexShrink(0)
+        .margin({ left: $r('app.float.space_sm') })
       } else {
         UrgencyTag({
           level: this.entry.level,
           text: UrgencyText.label(getContext(this), new UrgencyInfo(this.entry.level, this.entry.days))
         })
+          .flexShrink(0)
+          .margin({ left: $r('app.float.space_sm') })
       }
     }
     .width('100%')
