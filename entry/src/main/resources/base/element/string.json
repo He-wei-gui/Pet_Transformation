@@ -154,6 +154,11 @@
     { "name": "filter_today", "value": "今日" },
     { "name": "filter_all", "value": "全部" },
 
-    { "name": "detail_length_trend", "value": "体长趋势" }
+    { "name": "detail_length_trend", "value": "体长趋势" },
+
+    { "name": "perm_internet_reason", "value": "用于与云端同步宠物数据" },
+    { "name": "err_network", "value": "网络异常，请检查连接后重试" },
+    { "name": "err_unauthorized", "value": "登录已失效，请重新登录" },
+    { "name": "err_server", "value": "服务器繁忙，请稍后再试" }
   ]
 }

@@ -24,8 +24,12 @@ export class RouteConstants {
  * AppStorage / 跨页持久化中使用的键名常量，集中管理避免硬编码字符串。
  */
 export class StorageKeys {
+  /** 当前登录用户标识：接入云端后存 openid 字符串（未登录为空串）。 */
   static readonly SESSION_USER_ID: string = 'session_user_id';
   static readonly SESSION_NICKNAME: string = 'session_nickname';
+  /** 云端鉴权 JWT（Bearer token）。 */
+  static readonly SESSION_TOKEN: string = 'session_token';
+  /** 当前选中宠物标识：接入云端后存云端 _id 字符串（无为空串）。 */
   static readonly CURRENT_PET_ID: string = 'current_pet_id';
   static readonly COLOR_MODE: string = 'pref_color_mode';
 }

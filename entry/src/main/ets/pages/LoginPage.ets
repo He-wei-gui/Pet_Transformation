@@ -32,7 +32,7 @@ struct LoginPage {
     }
     this.errorMsg = '';
     this.loading = true;
-    const res: Result<number> = await AuthService.login(this.username, this.password);
+    const res: Result<string> = await AuthService.login(this.username, this.password);
     this.loading = false;
     if (res.success) {
       router.replaceUrl({ url: RouteConstants.MAIN }).catch((err: Object) => {

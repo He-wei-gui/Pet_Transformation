@@ -9,7 +9,7 @@ export class PhotoRepository {
   private static map(rs: relationalStore.ResultSet): Photo {
     return new Photo(
       rs.getLong(rs.getColumnIndex('id')),
-      rs.getLong(rs.getColumnIndex('pet_id')),
+      rs.getString(rs.getColumnIndex('pet_id')),
       rs.getString(rs.getColumnIndex('date')),
       rs.getString(rs.getColumnIndex('uri')),
       rs.getDouble(rs.getColumnIndex('length_cm')),
@@ -18,7 +18,7 @@ export class PhotoRepository {
     );
   }
 
-  static async listByPet(petId: number): Promise<Photo[]> {
+  static async listByPet(petId: string): Promise<Photo[]> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('pet_id', petId);
     predicates.orderByDesc('date');
@@ -49,7 +49,7 @@ export class PhotoRepository {
     await Database.getStore().delete(predicates);
   }
 
-  static async removeByPet(petId: number): Promise<void> {
+  static async removeByPet(petId: string): Promise<void> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('pet_id', petId);
     await Database.getStore().delete(predicates);

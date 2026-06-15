@@ -20,7 +20,7 @@ const AVATARS: string[] = ['🦎', '🐉', '🐍', '🐢', '🦖', '🐸', '🦂
 @Entry
 @Component
 struct PetEditPage {
-  @State petId: number = 0;
+  @State petId: string = '';
   @State name: string = '';
   @State species: string = '';
   @State avatar: string = '🦎';
@@ -32,12 +32,12 @@ struct PetEditPage {
   @State loading: boolean = false;
   private origNextFeed: string = '';
   private origNextSub: string = '';
-  private userId: number = 0;
+  private userId: string = '';
 
   aboutToAppear(): void {
     this.userId = SessionStore.currentUserId();
-    this.petId = AppStorage.get<number>(StorageKeys.CURRENT_PET_ID) ?? 0;
-    if (this.petId > 0) {
+    this.petId = AppStorage.get<string>(StorageKeys.CURRENT_PET_ID) ?? '';
+    if (this.petId.length > 0) {
       this.loadPet();
     }
   }
@@ -92,8 +92,8 @@ struct PetEditPage {
     const fi: number = Number.parseInt(this.feedInterval, 10);
     const si: number = Number.parseInt(this.subInterval, 10);
     const today: string = DateUtil.today();
-    const nextFeed: string = this.petId > 0 ? this.origNextFeed : ScheduleService.nextFeedDate(today, fi);
-    const nextSub: string = this.petId > 0 ? this.origNextSub : ScheduleService.nextSubstrateDate(today, si);
+    const nextFeed: string = this.petId.length > 0 ? this.origNextFeed : ScheduleService.nextFeedDate(today, fi);
+    const nextSub: string = this.petId.length > 0 ? this.origNextSub : ScheduleService.nextSubstrateDate(today, si);
     const pet: Pet = new Pet(this.petId, this.userId, this.name.trim(), this.species.trim(),
       this.avatar, this.birthDate, fi, si, nextFeed, nextSub, this.note.trim());
 
@@ -128,7 +128,7 @@ struct PetEditPage {
 
   build() {
     Column() {
-      TopBar({ title: this.petId > 0 ? $r('app.string.pet_edit') : $r('app.string.pet_add') })
+      TopBar({ title: this.petId.length > 0 ? $r('app.string.pet_edit') : $r('app.string.pet_add') })
 
       Scroll() {
         Column({ space: 16 }) {

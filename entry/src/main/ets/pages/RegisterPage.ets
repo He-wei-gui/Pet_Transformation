@@ -41,7 +41,7 @@ struct RegisterPage {
     }
     this.errorMsg = '';
     this.loading = true;
-    const res: Result<number> = await AuthService.register(this.username, this.password, this.nickname);
+    const res: Result<string> = await AuthService.register(this.username, this.password, this.nickname);
     this.loading = false;
     if (res.success) {
       router.replaceUrl({ url: RouteConstants.MAIN }).catch((err: Object) => {

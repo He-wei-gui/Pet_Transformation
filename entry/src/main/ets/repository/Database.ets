@@ -4,75 +4,37 @@ import { Logger } from '../utils/Logger';
 
 const DB_NAME: string = 'pet_tracker.db';
 
-const CREATE_USER: string =
-  'CREATE TABLE IF NOT EXISTS user (' +
-  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'username TEXT NOT NULL UNIQUE, ' +
-  'password_hash TEXT NOT NULL, ' +
-  'salt TEXT NOT NULL, ' +
-  'nickname TEXT, ' +
-  'avatar TEXT, ' +
-  'created_at TEXT)';
-
-const CREATE_PET: string =
-  'CREATE TABLE IF NOT EXISTS pet (' +
-  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'user_id INTEGER NOT NULL, ' +
-  'name TEXT NOT NULL, ' +
-  'species TEXT, ' +
-  'avatar TEXT, ' +
-  'birth_date TEXT, ' +
-  'feed_interval INTEGER, ' +
-  'sub_interval INTEGER, ' +
-  'next_feed_date TEXT, ' +
-  'next_sub_date TEXT, ' +
-  'note TEXT)';
-
-const CREATE_FEED: string =
-  'CREATE TABLE IF NOT EXISTS feed_log (' +
-  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id INTEGER NOT NULL, ' +
-  'date TEXT, food_type TEXT, amount TEXT, note TEXT, created_at TEXT)';
-
-const CREATE_WEIGHT: string =
-  'CREATE TABLE IF NOT EXISTS weight_log (' +
-  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id INTEGER NOT NULL, ' +
-  'date TEXT, weight REAL, created_at TEXT)';
-
-const CREATE_SUBSTRATE: string =
-  'CREATE TABLE IF NOT EXISTS substrate_log (' +
-  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id INTEGER NOT NULL, ' +
-  'date TEXT, substrate_type TEXT, note TEXT, created_at TEXT)';
+// 接入云端后，user/pet/feed/weight/substrate 走云端 API，本地只保留尚未上云的模块。
+// pet_id / user_id 为云端标识字符串，故用 TEXT。
 
 const CREATE_MOLT: string =
   'CREATE TABLE IF NOT EXISTS molt_log (' +
   'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id INTEGER NOT NULL, ' +
+  'pet_id TEXT NOT NULL, ' +
   'date TEXT, status TEXT, note TEXT, created_at TEXT)';
 
 const CREATE_ENV: string =
   'CREATE TABLE IF NOT EXISTS env_log (' +
   'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id INTEGER NOT NULL, ' +
+  'pet_id TEXT NOT NULL, ' +
   'date TEXT, temperature REAL, humidity REAL, uvb REAL, note TEXT, created_at TEXT)';
 
 const CREATE_PHOTO: string =
   'CREATE TABLE IF NOT EXISTS photo (' +
   'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id INTEGER NOT NULL, ' +
+  'pet_id TEXT NOT NULL, ' +
   'date TEXT, uri TEXT, length_cm REAL, caption TEXT, created_at TEXT)';
 
 const CREATE_TODO: string =
   'CREATE TABLE IF NOT EXISTS todo (' +
   'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'user_id INTEGER NOT NULL, ' +
+  'user_id TEXT NOT NULL, ' +
   'title TEXT NOT NULL, date TEXT, done INTEGER DEFAULT 0, created_at TEXT)';
 
 /**
  * 本地关系型数据库（SQLite）管理器，单例持有 RdbStore。
- * 须在使用任何 Repository 之前调用 init()（EntryAbility.onCreate 中执行）。
+ * 接入云端后仅承载尚未上云的本地模块（蜕皮/环境/相册/待办）。
+ * 须在使用任何本地 Repository 之前调用 init()（EntryAbility.onWindowStageCreate 中执行）。
  */
 export class Database {
   private static store: relationalStore.RdbStore | null = null;
@@ -104,11 +66,6 @@ export class Database {
   }
 
   private static async createTables(store: relationalStore.RdbStore): Promise<void> {
-    await store.executeSql(CREATE_USER);
-    await store.executeSql(CREATE_PET);
-    await store.executeSql(CREATE_FEED);
-    await store.executeSql(CREATE_WEIGHT);
-    await store.executeSql(CREATE_SUBSTRATE);
     await store.executeSql(CREATE_MOLT);
     await store.executeSql(CREATE_ENV);
     await store.executeSql(CREATE_PHOTO);

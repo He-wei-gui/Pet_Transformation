@@ -23,10 +23,10 @@ struct MoltLogPage {
   @State status: string = STATUS_DONE;
   @State note: string = '';
   @State loading: boolean = false;
-  private petId: number = 0;
+  private petId: string = '';
 
   aboutToAppear(): void {
-    this.petId = AppStorage.get<number>(StorageKeys.CURRENT_PET_ID) ?? 0;
+    this.petId = AppStorage.get<string>(StorageKeys.CURRENT_PET_ID) ?? '';
     this.reload();
   }
 

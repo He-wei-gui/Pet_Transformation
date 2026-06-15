@@ -26,7 +26,7 @@ export struct PetListTab {
     }
   }
 
-  private gotoEdit(petId: number): void {
+  private gotoEdit(petId: string): void {
     AppStorage.setOrCreate(StorageKeys.CURRENT_PET_ID, petId);
     router.pushUrl({ url: RouteConstants.PET_EDIT });
   }
@@ -44,7 +44,7 @@ export struct PetListTab {
           .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.brand_primary'))
           .onClick(() => {
-            this.gotoEdit(0);
+            this.gotoEdit('');
           })
       }
       .width('100%')
@@ -62,7 +62,7 @@ export struct PetListTab {
           actionLabel: $r('app.string.pet_add'),
           showAction: true,
           onAction: (): void => {
-            this.gotoEdit(0);
+            this.gotoEdit('');
           }
         })
       } else {

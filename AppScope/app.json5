@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.example.pet_ui",
+    "bundleName": "com.lysyminger.Pet_Transform",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",

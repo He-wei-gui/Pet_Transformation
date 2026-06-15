@@ -26,7 +26,7 @@ struct ProfilePage {
   @State newPwd: string = '';
   @State errorMsg: string = '';
   @State loading: boolean = false;
-  private userId: number = 0;
+  private userId: string = '';
 
   aboutToAppear(): void {
     this.userId = SessionStore.currentUserId();
@@ -34,7 +34,7 @@ struct ProfilePage {
   }
 
   private async loadUser(): Promise<void> {
-    const user: User | null = await UserRepository.findById(this.userId);
+    const user: User | null = await UserRepository.getCurrent();
     if (user !== null) {
       this.nickname = user.nickname;
       this.avatar = user.avatar.length > 0 ? user.avatar : '😀';
@@ -63,14 +63,14 @@ struct ProfilePage {
     this.loading = true;
 
     if (wantPwd) {
-      const cp: Result<number> = await AuthService.changePassword(this.userId, this.oldPwd, this.newPwd);
+      const cp: Result<string> = await AuthService.changePassword(this.userId, this.oldPwd, this.newPwd);
       if (!cp.success) {
         this.errorMsg = this.localize(cp.error);
         this.loading = false;
         return;
       }
     }
-    const up: Result<number> = await AuthService.updateProfile(this.userId, this.nickname, this.avatar);
+    const up: Result<string> = await AuthService.updateProfile(this.userId, this.nickname, this.avatar);
     this.loading = false;
     if (up.success) {
       Toast.saved();

@@ -45,10 +45,10 @@ struct PetDetailPage {
   @State weights: number[] = [];
   @State lengths: number[] = [];
   @State cats: RecordCat[] = [];
-  private petId: number = 0;
+  private petId: string = '';
 
   aboutToAppear(): void {
-    this.petId = AppStorage.get<number>(StorageKeys.CURRENT_PET_ID) ?? 0;
+    this.petId = AppStorage.get<string>(StorageKeys.CURRENT_PET_ID) ?? '';
     this.cats = [
       new RecordCat('⚖️', $r('app.string.record_weight'), RouteConstants.WEIGHT_LOG),
       new RecordCat('🍽️', $r('app.string.record_feed'), RouteConstants.FEED_LOG),
