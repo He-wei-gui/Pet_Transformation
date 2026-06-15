@@ -9,7 +9,7 @@ export class EnvLogRepository {
   private static map(rs: relationalStore.ResultSet): EnvLog {
     return new EnvLog(
       rs.getLong(rs.getColumnIndex('id')),
-      rs.getLong(rs.getColumnIndex('pet_id')),
+      rs.getString(rs.getColumnIndex('pet_id')),
       rs.getString(rs.getColumnIndex('date')),
       rs.getDouble(rs.getColumnIndex('temperature')),
       rs.getDouble(rs.getColumnIndex('humidity')),
@@ -19,7 +19,7 @@ export class EnvLogRepository {
     );
   }
 
-  static async listByPet(petId: number): Promise<EnvLog[]> {
+  static async listByPet(petId: string): Promise<EnvLog[]> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('pet_id', petId);
     predicates.orderByAsc('date');
@@ -51,7 +51,7 @@ export class EnvLogRepository {
     await Database.getStore().delete(predicates);
   }
 
-  static async removeByPet(petId: number): Promise<void> {
+  static async removeByPet(petId: string): Promise<void> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('pet_id', petId);
     await Database.getStore().delete(predicates);

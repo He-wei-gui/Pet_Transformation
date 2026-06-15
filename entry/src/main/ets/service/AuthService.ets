@@ -1,55 +1,64 @@
-import { User } from '../model/User';
-import { UserRepository } from '../repository/UserRepository';
-import { Hash } from '../utils/Hash';
 import { Result } from '../utils/Result';
-import { DateUtil } from '../utils/DateUtil';
+import { ApiClient } from './ApiClient';
+import { UserRepository } from '../repository/UserRepository';
+import { User } from '../model/User';
 import { SessionStore } from './SessionStore';
-import { SeedService } from './SeedService';
 import { Logger } from '../utils/Logger';
 
+/** /auth/register 与 /auth/login-app 的响应。 */
+interface AuthResp {
+  token: string;
+  openid: string;
+}
+
+interface RegisterReq {
+  username: string;
+  password: string;
+  nickname: string;
+}
+
+interface LoginReq {
+  username: string;
+  password: string;
+}
+
 /**
- * 鉴权服务：注册 / 登录 / 退出。本地校验，密码加盐哈希存储。
+ * 鉴权服务（在线优先）：注册 / 登录 / 退出直连云端 /auth/*，
+ * 成功后持久化 openid + token。资料更新走 /user。
  */
 export class AuthService {
-  /** 注册：用户名唯一，成功后写入演示数据并保存会话。返回新用户 id。 */
-  static async register(username: string, password: string, nickname: string): Promise<Result<number>> {
-    try {
-      const trimmedName: string = username.trim();
-      const existing: User | null = await UserRepository.findByUsername(trimmedName);
-      if (existing !== null) {
-        return Result.fail('err_username_taken');
-      }
-      const salt: string = Hash.generateSalt();
-      const hash: string = await Hash.sha256(salt, password);
-      const finalNickname: string = nickname.trim().length > 0 ? nickname.trim() : trimmedName;
-      const user: User = new User(0, trimmedName, hash, salt, finalNickname, '', DateUtil.today());
-      const id: number = await UserRepository.create(user);
-      await SeedService.seedIfEmpty(id);
-      await SessionStore.save(id, finalNickname);
-      return Result.ok(id);
-    } catch (err) {
-      Logger.error(`register failed: ${JSON.stringify(err)}`);
-      return Result.fail('err_register_failed');
+  /** 注册：成功后保存会话，返回 openid。 */
+  static async register(username: string, password: string, nickname: string): Promise<Result<string>> {
+    const name: string = username.trim();
+    const nick: string = nickname.trim().length > 0 ? nickname.trim() : name;
+    const req: RegisterReq = { username: name, password: password, nickname: nick };
+    const r: Result<AuthResp> = await ApiClient.postPublic<AuthResp>('/auth/register', req);
+    if (!r.success || r.data === null) {
+      return Result.fail(r.error.length > 0 ? r.error : 'err_register_failed');
     }
+    await SessionStore.save(r.data.openid, nick, r.data.token);
+    return Result.ok(r.data.openid);
   }
 
-  /** 登录：校验用户名与密码哈希，成功后保存会话。返回用户 id。 */
-  static async login(username: string, password: string): Promise<Result<number>> {
-    try {
-      const user: User | null = await UserRepository.findByUsername(username.trim());
-      if (user === null) {
-        return Result.fail('err_login_invalid');
-      }
-      const hash: string = await Hash.sha256(user.salt, password);
-      if (hash !== user.passwordHash) {
-        return Result.fail('err_login_invalid');
-      }
-      await SessionStore.save(user.id, user.nickname);
-      return Result.ok(user.id);
-    } catch (err) {
-      Logger.error(`login failed: ${JSON.stringify(err)}`);
-      return Result.fail('err_login_failed');
+  /** 登录：成功后保存会话，并拉取云端资料刷新昵称。返回 openid。 */
+  static async login(username: string, password: string): Promise<Result<string>> {
+    const name: string = username.trim();
+    const req: LoginReq = { username: name, password: password };
+    const r: Result<AuthResp> = await ApiClient.postPublic<AuthResp>('/auth/login-app', req);
+    if (!r.success || r.data === null) {
+      return Result.fail(r.error.length > 0 ? r.error : 'err_login_invalid');
     }
+    // 先用用户名占位保存（含 token），再拉取真实昵称
+    await SessionStore.save(r.data.openid, name, r.data.token);
+    try {
+      const user: User | null = await UserRepository.getCurrent();
+      if (user !== null && user.nickname.length > 0) {
+        await SessionStore.save(r.data.openid, user.nickname, r.data.token);
+      }
+    } catch (err) {
+      Logger.error(`fetch profile after login failed: ${JSON.stringify(err)}`);
+    }
+    return Result.ok(r.data.openid);
   }
 
   static async logout(): Promise<void> {
@@ -57,36 +66,20 @@ export class AuthService {
   }
 
   /** 更新昵称与头像，同步刷新会话昵称。 */
-  static async updateProfile(userId: number, nickname: string, avatar: string): Promise<Result<number>> {
+  static async updateProfile(userId: string, nickname: string, avatar: string): Promise<Result<string>> {
     try {
-      const finalNickname: string = nickname.trim();
-      await UserRepository.updateProfile(userId, finalNickname, avatar);
-      await SessionStore.save(userId, finalNickname);
+      const nick: string = nickname.trim();
+      await UserRepository.saveProfile(nick, avatar);
+      await SessionStore.save(SessionStore.currentUserId(), nick, SessionStore.currentToken());
       return Result.ok(userId);
     } catch (err) {
       Logger.error(`updateProfile failed: ${JSON.stringify(err)}`);
-      return Result.fail('err_register_failed');
+      return Result.fail('err_server');
     }
   }
 
-  /** 修改密码：校验原密码，成功后用新盐重新哈希。 */
-  static async changePassword(userId: number, oldPwd: string, newPwd: string): Promise<Result<number>> {
-    try {
-      const user: User | null = await UserRepository.findById(userId);
-      if (user === null) {
-        return Result.fail('err_login_failed');
-      }
-      const oldHash: string = await Hash.sha256(user.salt, oldPwd);
-      if (oldHash !== user.passwordHash) {
-        return Result.fail('err_old_password');
-      }
-      const salt: string = Hash.generateSalt();
-      const hash: string = await Hash.sha256(salt, newPwd);
-      await UserRepository.updatePassword(userId, hash, salt);
-      return Result.ok(userId);
-    } catch (err) {
-      Logger.error(`changePassword failed: ${JSON.stringify(err)}`);
-      return Result.fail('err_register_failed');
-    }
+  /** 改密：后端暂未提供该接口。 */
+  static async changePassword(userId: string, oldPwd: string, newPwd: string): Promise<Result<string>> {
+    return Result.fail('当前版本暂不支持修改密码');
   }
 }

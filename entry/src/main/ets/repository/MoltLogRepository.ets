@@ -9,7 +9,7 @@ export class MoltLogRepository {
   private static map(rs: relationalStore.ResultSet): MoltLog {
     return new MoltLog(
       rs.getLong(rs.getColumnIndex('id')),
-      rs.getLong(rs.getColumnIndex('pet_id')),
+      rs.getString(rs.getColumnIndex('pet_id')),
       rs.getString(rs.getColumnIndex('date')),
       rs.getString(rs.getColumnIndex('status')),
       rs.getString(rs.getColumnIndex('note')),
@@ -17,7 +17,7 @@ export class MoltLogRepository {
     );
   }
 
-  static async listByPet(petId: number): Promise<MoltLog[]> {
+  static async listByPet(petId: string): Promise<MoltLog[]> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('pet_id', petId);
     predicates.orderByDesc('date');
@@ -47,7 +47,7 @@ export class MoltLogRepository {
     await Database.getStore().delete(predicates);
   }
 
-  static async removeByPet(petId: number): Promise<void> {
+  static async removeByPet(petId: string): Promise<void> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('pet_id', petId);
     await Database.getStore().delete(predicates);

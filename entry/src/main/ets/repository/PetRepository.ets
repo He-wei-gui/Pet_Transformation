@@ -1,94 +1,106 @@
-import { relationalStore } from '@kit.ArkData';
-import { Database } from './Database';
 import { Pet } from '../model/Pet';
+import { ApiClient } from '../service/ApiClient';
+import { Result } from '../utils/Result';
 
-const TABLE: string = 'pet';
+/** 云端 pet_info 的 JSON 形状（字段名为后端约定，与模型不同）。 */
+interface PetDto {
+  _id: string;
+  user_openid: string;
+  name?: string;
+  species?: string;
+  avatar?: string;
+  arrivalDate?: string;
+  initialWeight?: number;
+  feed_interval?: number;
+  sub_interval?: number;
+  next_feed_date?: string;
+  next_sub_date?: string;
+  note?: string;
+  created_at?: string;
+}
+
+/** 提交给后端的宠物可写字段。 */
+interface PetReq {
+  name: string;
+  species: string;
+  avatar: string;
+  arrivalDate: string;
+  feed_interval: number;
+  sub_interval: number;
+  next_feed_date: string;
+  next_sub_date: string;
+  note: string;
+}
 
 /**
- * 宠物仓储。所有查询按 user_id 隔离，保证多用户数据互不可见。
+ * 宠物仓储（在线优先）：所有读写直达云端 /pets，按 token 的 openid 隔离用户。
+ * 字段映射：birthDate↔arrivalDate、feedInterval↔feed_interval、subInterval↔sub_interval、
+ * nextFeedDate↔next_feed_date、nextSubDate↔next_sub_date；云端 initialWeight 暂忽略。
  */
 export class PetRepository {
-  private static map(rs: relationalStore.ResultSet): Pet {
+  private static toPet(d: PetDto): Pet {
     return new Pet(
-      rs.getLong(rs.getColumnIndex('id')),
-      rs.getLong(rs.getColumnIndex('user_id')),
-      rs.getString(rs.getColumnIndex('name')),
-      rs.getString(rs.getColumnIndex('species')),
-      rs.getString(rs.getColumnIndex('avatar')),
-      rs.getString(rs.getColumnIndex('birth_date')),
-      rs.getLong(rs.getColumnIndex('feed_interval')),
-      rs.getLong(rs.getColumnIndex('sub_interval')),
-      rs.getString(rs.getColumnIndex('next_feed_date')),
-      rs.getString(rs.getColumnIndex('next_sub_date')),
-      rs.getString(rs.getColumnIndex('note'))
+      d._id,
+      d.user_openid ?? '',
+      d.name ?? '',
+      d.species ?? '',
+      d.avatar ?? '',
+      d.arrivalDate ?? '',
+      d.feed_interval ?? 0,
+      d.sub_interval ?? 0,
+      d.next_feed_date ?? '',
+      d.next_sub_date ?? '',
+      d.note ?? ''
     );
   }
 
-  private static toValues(pet: Pet): relationalStore.ValuesBucket {
-    const vb: relationalStore.ValuesBucket = {
-      'user_id': pet.userId,
-      'name': pet.name,
-      'species': pet.species,
-      'avatar': pet.avatar,
-      'birth_date': pet.birthDate,
-      'feed_interval': pet.feedInterval,
-      'sub_interval': pet.subInterval,
-      'next_feed_date': pet.nextFeedDate,
-      'next_sub_date': pet.nextSubDate,
-      'note': pet.note
+  private static toReq(pet: Pet): PetReq {
+    return {
+      name: pet.name,
+      species: pet.species,
+      avatar: pet.avatar,
+      arrivalDate: pet.birthDate,
+      feed_interval: pet.feedInterval,
+      sub_interval: pet.subInterval,
+      next_feed_date: pet.nextFeedDate,
+      next_sub_date: pet.nextSubDate,
+      note: pet.note
     };
-    return vb;
   }
 
-  static async findByUser(userId: number): Promise<Pet[]> {
-    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
-    predicates.equalTo('user_id', userId);
-    predicates.orderByAsc('id');
-    const rs: relationalStore.ResultSet = await Database.getStore().query(predicates);
-    const list: Pet[] = [];
-    while (rs.goToNextRow()) {
-      list.push(PetRepository.map(rs));
+  /** userId 参数保留以兼容调用方，实际用户由 token 决定。 */
+  static async findByUser(userId: string): Promise<Pet[]> {
+    const dtos: PetDto[] = ApiClient.unwrap(await ApiClient.get<PetDto[]>('/pets'));
+    return (dtos ?? []).map((d: PetDto): Pet => PetRepository.toPet(d));
+  }
+
+  static async findById(id: string): Promise<Pet | null> {
+    const r: Result<PetDto> = await ApiClient.get<PetDto>(`/pets/${id}`);
+    if (!r.success || r.data === null) {
+      return null;
     }
-    rs.close();
-    return list;
+    return PetRepository.toPet(r.data);
   }
 
-  static async findById(id: number): Promise<Pet | null> {
-    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
-    predicates.equalTo('id', id);
-    const rs: relationalStore.ResultSet = await Database.getStore().query(predicates);
-    let pet: Pet | null = null;
-    if (rs.goToFirstRow()) {
-      pet = PetRepository.map(rs);
-    }
-    rs.close();
-    return pet;
-  }
-
-  static async create(pet: Pet): Promise<number> {
-    return Database.getStore().insert(TABLE, PetRepository.toValues(pet));
+  /** 新建宠物，返回云端生成的 _id。 */
+  static async create(pet: Pet): Promise<string> {
+    const dto: PetDto = ApiClient.unwrap(await ApiClient.post<PetDto>('/pets', PetRepository.toReq(pet)));
+    return dto._id;
   }
 
   static async update(pet: Pet): Promise<void> {
-    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
-    predicates.equalTo('id', pet.id);
-    await Database.getStore().update(PetRepository.toValues(pet), predicates);
+    ApiClient.unwrap(await ApiClient.put<PetDto>(`/pets/${pet.id}`, PetRepository.toReq(pet)));
   }
 
-  /** 更新动态排程产生的两个 next 日期。 */
-  static async updateNextDates(id: number, nextFeedDate: string, nextSubDate: string): Promise<void> {
-    const vb: relationalStore.ValuesBucket = {
+  static async updateNextDates(id: string, nextFeedDate: string, nextSubDate: string): Promise<void> {
+    const body: Record<string, string> = {
       'next_feed_date': nextFeedDate,
       'next_sub_date': nextSubDate
     };
-    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
-    predicates.equalTo('id', id);
-    await Database.getStore().update(vb, predicates);
+    ApiClient.unwrap(await ApiClient.put<PetDto>(`/pets/${id}`, body));
   }
 
-  static async remove(id: number): Promise<void> {
-    const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
-    predicates.equalTo('id', id);
-    await Database.getStore().delete(predicates);
+  static async remove(id: string): Promise<void> {
+    ApiClient.unwrap(await ApiClient.del<object>(`/pets/${id}`));
   }
 }

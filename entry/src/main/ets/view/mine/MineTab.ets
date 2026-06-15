@@ -47,7 +47,7 @@ export struct MineTab {
       this.nickname = SessionStore.currentNickname();
       this.petCount = (await PetService.listPets()).length;
       this.darkMode = ThemeService.isDark();
-      const user: User | null = await UserRepository.findById(SessionStore.currentUserId());
+      const user: User | null = await UserRepository.getCurrent();
       this.avatar = (user !== null && user.avatar.length > 0) ? user.avatar : '😀';
     } catch (err) {
       Logger.error(`load mine failed: ${JSON.stringify(err)}`);

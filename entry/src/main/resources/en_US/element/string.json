@@ -154,6 +154,11 @@
     { "name": "filter_today", "value": "Today" },
     { "name": "filter_all", "value": "All" },
 
-    { "name": "detail_length_trend", "value": "Length Trend" }
+    { "name": "detail_length_trend", "value": "Length Trend" },
+
+    { "name": "perm_internet_reason", "value": "Used to sync pet data with the cloud" },
+    { "name": "err_network", "value": "Network error, please check your connection" },
+    { "name": "err_unauthorized", "value": "Session expired, please sign in again" },
+    { "name": "err_server", "value": "Server is busy, please try again later" }
   ]
 }

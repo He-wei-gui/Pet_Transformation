@@ -1,8 +1,9 @@
 /**
- * 用户实体。passwordHash = SHA256(salt + 明文)，绝不存明文。
+ * 用户实体。接入云端后 id 为 openid（字符串）。
+ * 密码改由云端用 password_hash 存储，端上不再保存 passwordHash/salt（保留字段仅为兼容，通常为空）。
  */
 export class User {
-  id: number;
+  id: string;
   username: string;
   passwordHash: string;
   salt: string;
@@ -10,7 +11,7 @@ export class User {
   avatar: string;
   createdAt: string;
 
-  constructor(id: number, username: string, passwordHash: string, salt: string,
+  constructor(id: string, username: string, passwordHash: string, salt: string,
     nickname: string, avatar: string, createdAt: string) {
     this.id = id;
     this.username = username;

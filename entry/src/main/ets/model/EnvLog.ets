@@ -1,7 +1,7 @@
 /** 环境记录：温度(℃)、湿度(%)、UVB 指数。 */
 export class EnvLog {
   id: number;
-  petId: number;
+  petId: string;
   date: string;
   temperature: number;
   humidity: number;
@@ -9,7 +9,7 @@ export class EnvLog {
   note: string;
   createdAt: string;
 
-  constructor(id: number, petId: number, date: string, temperature: number,
+  constructor(id: number, petId: string, date: string, temperature: number,
     humidity: number, uvb: number, note: string, createdAt: string) {
     this.id = id;
     this.petId = petId;

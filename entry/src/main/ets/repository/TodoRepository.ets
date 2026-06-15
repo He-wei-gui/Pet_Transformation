@@ -9,7 +9,7 @@ export class TodoRepository {
   private static map(rs: relationalStore.ResultSet): Todo {
     return new Todo(
       rs.getLong(rs.getColumnIndex('id')),
-      rs.getLong(rs.getColumnIndex('user_id')),
+      rs.getString(rs.getColumnIndex('user_id')),
       rs.getString(rs.getColumnIndex('title')),
       rs.getString(rs.getColumnIndex('date')),
       rs.getLong(rs.getColumnIndex('done')),
@@ -18,7 +18,7 @@ export class TodoRepository {
   }
 
   /** 返回该用户全部待办：未完成(done=0)在前，再按日期升序。 */
-  static async listByUser(userId: number): Promise<Todo[]> {
+  static async listByUser(userId: string): Promise<Todo[]> {
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(TABLE);
     predicates.equalTo('user_id', userId);
     predicates.orderByAsc('done');

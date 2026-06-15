@@ -1,10 +1,11 @@
 /**
- * 宠物实体。feedInterval/subInterval 为喂食/换料间隔天数，
+ * 宠物实体。id/userId 为云端标识（_id / openid 字符串）。
+ * feedInterval/subInterval 为喂食/换料间隔天数，
  * nextFeedDate/nextSubDate 由 ScheduleService 依据“实际登记日 + 间隔”动态推算。
  */
 export class Pet {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   name: string;
   species: string;
   avatar: string;
@@ -15,7 +16,7 @@ export class Pet {
   nextSubDate: string;
   note: string;
 
-  constructor(id: number, userId: number, name: string, species: string, avatar: string,
+  constructor(id: string, userId: string, name: string, species: string, avatar: string,
     birthDate: string, feedInterval: number, subInterval: number,
     nextFeedDate: string, nextSubDate: string, note: string) {
     this.id = id;

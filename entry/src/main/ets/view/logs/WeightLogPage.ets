@@ -24,10 +24,10 @@ struct WeightLogPage {
   @State weightStr: string = '';
   @State errorMsg: string = '';
   @State loading: boolean = false;
-  private petId: number = 0;
+  private petId: string = '';
 
   aboutToAppear(): void {
-    this.petId = AppStorage.get<number>(StorageKeys.CURRENT_PET_ID) ?? 0;
+    this.petId = AppStorage.get<string>(StorageKeys.CURRENT_PET_ID) ?? '';
     this.reload();
   }
 
@@ -53,12 +53,13 @@ struct WeightLogPage {
       await this.reload();
       Toast.added();
     } catch (err) {
-      Logger.error(`add weight failed: ${JSON.stringify(err)}`);
+      this.errorMsg = I18n.t(getContext(this), (err as Error).message);
+      Logger.error(`add weight failed: ${(err as Error).message}`);
     }
     this.loading = false;
   }
 
-  private async remove(id: number): Promise<void> {
+  private async remove(id: string): Promise<void> {
     try {
       await WeightLogRepository.remove(id);
       await this.reload();

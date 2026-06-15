@@ -20,30 +20,28 @@ const SUBSTRATE: string = 'substrate';
 
 /**
  * 宠物业务服务：聚合仓储与动态排程，向 UI 暴露稳定的用例方法。
+ * 接入云端后宠物及其喂食/换料/体重直达云端，蜕皮/环境/相册仍走本地。
  */
 export class PetService {
   static async listPets(): Promise<Pet[]> {
     return PetRepository.findByUser(SessionStore.currentUserId());
   }
 
-  static async getPet(id: number): Promise<Pet | null> {
+  static async getPet(id: string): Promise<Pet | null> {
     return PetRepository.findById(id);
   }
 
-  /** 新建（id<=0）或更新宠物，返回宠物 id。 */
-  static async savePet(pet: Pet): Promise<number> {
-    if (pet.id > 0) {
+  /** 新建（id 为空）或更新宠物，返回宠物 id。 */
+  static async savePet(pet: Pet): Promise<string> {
+    if (pet.id.length > 0) {
       await PetRepository.update(pet);
       return pet.id;
     }
     return PetRepository.create(pet);
   }
 
-  /** 删除宠物并级联删除其所有记录。 */
-  static async deletePet(id: number): Promise<void> {
-    await FeedLogRepository.removeByPet(id);
-    await SubstrateLogRepository.removeByPet(id);
-    await WeightLogRepository.removeByPet(id);
+  /** 删除宠物：云端记录由后端级联删除，本地附属记录（蜕皮/环境/相册）单独清理。 */
+  static async deletePet(id: string): Promise<void> {
     await MoltLogRepository.removeByPet(id);
     await EnvLogRepository.removeByPet(id);
     await PhotoRepository.removeByPet(id);
@@ -51,8 +49,8 @@ export class PetService {
   }
 
   /** 记录喂食并按动态排程重算下一次喂食日。 */
-  static async logFeed(petId: number, date: string, foodType: string, amount: string, note: string): Promise<void> {
-    await FeedLogRepository.create(new FeedLog(0, petId, date, foodType, amount, note, DateUtil.today()));
+  static async logFeed(petId: string, date: string, foodType: string, amount: string, note: string): Promise<void> {
+    await FeedLogRepository.create(new FeedLog('', petId, date, foodType, amount, note, DateUtil.today()));
     const pet: Pet | null = await PetRepository.findById(petId);
     if (pet !== null) {
       const next: string = ScheduleService.nextFeedDate(date, pet.feedInterval);
@@ -61,8 +59,8 @@ export class PetService {
   }
 
   /** 记录换料并按动态排程重算下一次换料日。 */
-  static async logSubstrate(petId: number, date: string, type: string, note: string): Promise<void> {
-    await SubstrateLogRepository.create(new SubstrateLog(0, petId, date, type, note, DateUtil.today()));
+  static async logSubstrate(petId: string, date: string, type: string, note: string): Promise<void> {
+    await SubstrateLogRepository.create(new SubstrateLog('', petId, date, type, note, DateUtil.today()));
     const pet: Pet | null = await PetRepository.findById(petId);
     if (pet !== null) {
       const next: string = ScheduleService.nextSubstrateDate(date, pet.subInterval);
@@ -70,8 +68,8 @@ export class PetService {
     }
   }
 
-  static async logWeight(petId: number, date: string, weight: number): Promise<void> {
-    await WeightLogRepository.create(new WeightLog(0, petId, date, weight, DateUtil.today()));
+  static async logWeight(petId: string, date: string, weight: number): Promise<void> {
+    await WeightLogRepository.create(new WeightLog('', petId, date, weight, DateUtil.today()));
   }
 
   /** 汇总当前用户所有宠物的待办，按“逾期→今日→未来”排序。 */

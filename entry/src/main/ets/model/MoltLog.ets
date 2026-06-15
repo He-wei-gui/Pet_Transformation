@@ -1,13 +1,13 @@
 /** 蜕皮记录。status: 'start' 开始蜕皮 / 'done' 完成蜕皮。 */
 export class MoltLog {
   id: number;
-  petId: number;
+  petId: string;
   date: string;
   status: string;
   note: string;
   createdAt: string;
 
-  constructor(id: number, petId: number, date: string, status: string,
+  constructor(id: number, petId: string, date: string, status: string,
     note: string, createdAt: string) {
     this.id = id;
     this.petId = petId;

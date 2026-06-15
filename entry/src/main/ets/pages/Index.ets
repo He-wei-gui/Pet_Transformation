@@ -10,8 +10,8 @@ import { Logger } from '../utils/Logger';
 @Component
 struct Index {
   aboutToAppear(): void {
-    const userId: number = AppStorage.get<number>(StorageKeys.SESSION_USER_ID) ?? 0;
-    const target: string = userId > 0 ? RouteConstants.MAIN : RouteConstants.LOGIN;
+    const openid: string = AppStorage.get<string>(StorageKeys.SESSION_USER_ID) ?? '';
+    const target: string = openid.length > 0 ? RouteConstants.MAIN : RouteConstants.LOGIN;
     setTimeout(() => {
       router.replaceUrl({ url: target }).catch((err: Object) => {
         Logger.error(`route to ${target} failed: ${JSON.stringify(err)}`);
