@@ -10,9 +10,10 @@ export class User {
   nickname: string;
   avatar: string;
   createdAt: string;
+  email: string;
 
   constructor(id: string, username: string, passwordHash: string, salt: string,
-    nickname: string, avatar: string, createdAt: string) {
+    nickname: string, avatar: string, createdAt: string, email: string = '') {
     this.id = id;
     this.username = username;
     this.passwordHash = passwordHash;
@@ -20,5 +21,6 @@ export class User {
     this.nickname = nickname;
     this.avatar = avatar;
     this.createdAt = createdAt;
+    this.email = email;
   }
 }

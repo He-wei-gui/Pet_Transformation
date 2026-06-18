@@ -22,8 +22,30 @@ export class ValidationResult {
 }
 
 const USERNAME_PATTERN: RegExp = new RegExp('^[A-Za-z0-9_]{3,20}$');
+const EMAIL_PATTERN: RegExp = new RegExp('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$');
 
 export class Validator {
+  /** 邮箱格式。 */
+  static email(value: string): ValidationResult {
+    const v: string = value.trim();
+    if (v.length === 0) {
+      return ValidationResult.fail('err_email_required');
+    }
+    if (!EMAIL_PATTERN.test(v)) {
+      return ValidationResult.fail('err_email_format');
+    }
+    return ValidationResult.ok();
+  }
+
+  /** 验证码：6 位数字。 */
+  static code(value: string): ValidationResult {
+    const v: string = value.trim();
+    if (!new RegExp('^[0-9]{6}$').test(v)) {
+      return ValidationResult.fail('err_code_format');
+    }
+    return ValidationResult.ok();
+  }
+
   /** 用户名：3-20 位字母、数字或下划线。 */
   static username(value: string): ValidationResult {
     const v: string = value.trim();

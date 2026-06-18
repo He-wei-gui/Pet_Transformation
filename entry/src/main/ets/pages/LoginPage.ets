@@ -108,13 +108,23 @@ struct LoginPage {
         })
           .margin({ top: $r('app.float.space_xxl') })
 
-        Text($r('app.string.login_to_register'))
-          .fontSize($r('app.float.font_caption'))
-          .fontColor($r('app.color.brand_primary'))
-          .margin({ top: $r('app.float.space_xl') })
-          .onClick(() => {
-            router.pushUrl({ url: RouteConstants.REGISTER });
-          })
+        Row() {
+          Text($r('app.string.login_to_register'))
+            .fontSize($r('app.float.font_caption'))
+            .fontColor($r('app.color.brand_primary'))
+            .onClick(() => {
+              router.pushUrl({ url: RouteConstants.REGISTER });
+            })
+          Blank()
+          Text($r('app.string.login_forgot'))
+            .fontSize($r('app.float.font_caption'))
+            .fontColor($r('app.color.text_secondary'))
+            .onClick(() => {
+              router.pushUrl({ url: RouteConstants.FORGOT_PASSWORD });
+            })
+        }
+        .width('100%')
+        .margin({ top: $r('app.float.space_xl') })
       }
       .width('100%')
       .padding($r('app.float.space_xxl'))

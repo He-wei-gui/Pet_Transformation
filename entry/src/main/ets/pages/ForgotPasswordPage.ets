@@ -1,28 +1,33 @@
 import { router } from '@kit.ArkUI';
-import { RouteConstants } from '../constants/RouteConstants';
 import { Validator, ValidationResult } from '../utils/Validator';
 import { AuthService } from '../service/AuthService';
 import { Result } from '../utils/Result';
 import { FormField } from '../components/FormField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { EmailCodeField } from '../components/EmailCodeField';
+import { TopBar } from '../components/TopBar';
+import { Toast } from '../utils/Dialogs';
 import { Logger } from '../utils/Logger';
 import { I18n } from '../utils/I18n';
 
 /**
- * 注册页：用户名 + 昵称 + 密码 + 确认密码，本地校验；注册成功自动登录并进入主页。
+ * 找回密码页：用户名 + 邮箱 + 验证码 + 新密码。
+ * 验证码发到注册邮箱（服务器端校验），用户名与邮箱须匹配同一账号后才重置密码。
  */
 @Entry
 @Component
-struct RegisterPage {
+struct ForgotPasswordPage {
   @State username: string = '';
-  @State nickname: string = '';
   @State email: string = '';
   @State code: string = '';
   @State password: string = '';
   @State confirm: string = '';
   @State errorMsg: string = '';
   @State loading: boolean = false;
+
+  private localize(key: string): string {
+    return I18n.t(getContext(this), key);
+  }
 
   private validate(): ValidationResult {
     const u: ValidationResult = Validator.username(this.username);
@@ -44,65 +49,48 @@ struct RegisterPage {
     return Validator.passwordMatch(this.password, this.confirm);
   }
 
-  private async handleRegister(): Promise<void> {
+  private async handleReset(): Promise<void> {
     const check: ValidationResult = this.validate();
     if (!check.valid) {
-      this.errorMsg = I18n.t(getContext(this), check.messageKey);
+      this.errorMsg = this.localize(check.messageKey);
       return;
     }
     this.errorMsg = '';
     this.loading = true;
-    const res: Result<string> = await AuthService.register(this.username, this.password, this.nickname,
-      this.email, this.code);
+    const res: Result<string> = await AuthService.resetPassword(this.username, this.email, this.code, this.password);
     this.loading = false;
     if (res.success) {
-      router.replaceUrl({ url: RouteConstants.MAIN }).catch((err: Object) => {
-        Logger.error(`nav main failed: ${JSON.stringify(err)}`);
-      });
+      Toast.msg($r('app.string.forgot_done'));
+      router.back();
     } else {
-      this.errorMsg = I18n.t(getContext(this), res.error);
+      this.errorMsg = this.localize(res.error);
     }
   }
 
   build() {
-    Scroll() {
-      Column() {
-        Column() {
-          Text('🦎').fontSize(56)
-          Text($r('app.string.register_title'))
-            .fontSize($r('app.float.font_title'))
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.brand_primary'))
-            .margin({ top: $r('app.float.space_sm') })
-        }
-        .margin({ top: 56, bottom: 32 })
+    Column() {
+      TopBar({ title: $r('app.string.forgot_title') })
 
-        Column() {
+      Scroll() {
+        Column({ space: 16 }) {
+          Text($r('app.string.forgot_desc'))
+            .fontSize($r('app.float.font_caption'))
+            .fontColor($r('app.color.text_secondary'))
+            .width('100%')
+
           FormField({
             label: $r('app.string.login_username'),
-            placeholder: $r('app.string.hint_username_rule'),
+            placeholder: $r('app.string.hint_username'),
             text: this.username,
             onChange: (v: string): void => {
               this.username = v;
             }
           })
-            .margin({ bottom: $r('app.float.space_lg') })
+
+          EmailCodeField({ purpose: 'reset', email: this.email, code: this.code })
 
           FormField({
-            label: $r('app.string.register_nickname'),
-            placeholder: $r('app.string.hint_nickname'),
-            text: this.nickname,
-            onChange: (v: string): void => {
-              this.nickname = v;
-            }
-          })
-            .margin({ bottom: $r('app.float.space_lg') })
-
-          EmailCodeField({ purpose: 'register', email: this.email, code: this.code })
-            .margin({ bottom: $r('app.float.space_lg') })
-
-          FormField({
-            label: $r('app.string.login_password'),
+            label: $r('app.string.forgot_new_password'),
             placeholder: $r('app.string.hint_password_min'),
             text: this.password,
             isPassword: true,
@@ -110,7 +98,6 @@ struct RegisterPage {
               this.password = v;
             }
           })
-            .margin({ bottom: $r('app.float.space_lg') })
 
           FormField({
             label: $r('app.string.register_password_confirm'),
@@ -127,38 +114,26 @@ struct RegisterPage {
               .fontSize($r('app.float.font_small'))
               .fontColor($r('app.color.urgency_overdue'))
               .width('100%')
-              .margin({ top: $r('app.float.space_md') })
           }
 
           PrimaryButton({
-            label: $r('app.string.register_submit'),
+            label: $r('app.string.forgot_submit'),
             loading: this.loading,
             onTap: (): void => {
-              this.handleRegister();
+              this.handleReset();
             }
           })
-            .margin({ top: $r('app.float.space_xxl') })
-
-          Text($r('app.string.register_to_login'))
-            .fontSize($r('app.float.font_caption'))
-            .fontColor($r('app.color.brand_primary'))
-            .margin({ top: $r('app.float.space_xl') })
-            .onClick(() => {
-              router.back();
-            })
+            .margin({ top: $r('app.float.space_md') })
         }
         .width('100%')
         .padding($r('app.float.space_xxl'))
-        .backgroundColor($r('app.color.surface'))
-        .borderRadius($r('app.float.radius_card'))
       }
+      .layoutWeight(1)
       .width('100%')
-      .padding({ left: $r('app.float.space_xl'), right: $r('app.float.space_xl'), bottom: 40 })
-      .alignItems(HorizontalAlign.Center)
+      .align(Alignment.Top)
     }
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.page_background'))
-    .scrollBar(BarState.Off)
   }
 }

@@ -25,6 +25,7 @@ const AVATARS: string[] = ['🦎', '🐱', '🐶', '🐰', '🦊', '🐼', '🐯
 struct ProfilePage {
   @State nickname: string = '';
   @State avatar: string = '😀';
+  @State email: string = '';
   @State oldPwd: string = '';
   @State newPwd: string = '';
   @State errorMsg: string = '';
@@ -43,6 +44,7 @@ struct ProfilePage {
     if (user !== null) {
       this.nickname = user.nickname;
       this.avatar = user.avatar.length > 0 ? user.avatar : '😀';
+      this.email = user.email;
     }
   }
 
@@ -55,6 +57,14 @@ struct ProfilePage {
     if (!nameCheck.valid) {
       this.errorMsg = this.localize(nameCheck.messageKey);
       return;
+    }
+    // 邮箱选填；填了就必须合法（用于找回密码）
+    if (this.email.trim().length > 0) {
+      const em: ValidationResult = Validator.email(this.email);
+      if (!em.valid) {
+        this.errorMsg = this.localize(em.messageKey);
+        return;
+      }
     }
     const wantPwd: boolean = this.newPwd.length > 0;
     if (wantPwd) {
@@ -75,7 +85,7 @@ struct ProfilePage {
         return;
       }
     }
-    const up: Result<string> = await AuthService.updateProfile(this.userId, this.nickname, this.avatar);
+    const up: Result<string> = await AuthService.updateProfile(this.userId, this.nickname, this.avatar, this.email);
     this.loading = false;
     if (up.success) {
       Toast.saved();
@@ -195,6 +205,15 @@ struct ProfilePage {
             text: this.nickname,
             onChange: (v: string): void => {
               this.nickname = v;
+            }
+          })
+
+          FormField({
+            label: $r('app.string.auth_email'),
+            placeholder: $r('app.string.hint_email'),
+            text: this.email,
+            onChange: (v: string): void => {
+              this.email = v;
             }
           })
 

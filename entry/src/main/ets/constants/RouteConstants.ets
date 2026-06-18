@@ -6,6 +6,7 @@ export class RouteConstants {
   static readonly INDEX: string = 'pages/Index';
   static readonly LOGIN: string = 'pages/LoginPage';
   static readonly REGISTER: string = 'pages/RegisterPage';
+  static readonly FORGOT_PASSWORD: string = 'pages/ForgotPasswordPage';
   static readonly MAIN: string = 'pages/MainPage';
 
   static readonly PET_DETAIL: string = 'view/pets/PetDetailPage';

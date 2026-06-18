@@ -8,6 +8,7 @@ interface UserDto {
   nickname?: string;
   avatarUrl?: string;
   phone?: string;
+  email?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -16,6 +17,7 @@ interface UserDto {
 interface UserReq {
   nickname: string;
   avatarUrl: string;
+  email: string;
 }
 
 /**
@@ -24,7 +26,7 @@ interface UserReq {
  */
 export class UserRepository {
   private static toUser(d: UserDto): User {
-    return new User(d.openid, '', '', '', d.nickname ?? '', d.avatarUrl ?? '', d.createdAt ?? '');
+    return new User(d.openid, '', '', '', d.nickname ?? '', d.avatarUrl ?? '', d.createdAt ?? '', d.email ?? '');
   }
 
   /** 读取当前登录用户（由 token 决定）。 */
@@ -36,9 +38,9 @@ export class UserRepository {
     return UserRepository.toUser(r.data);
   }
 
-  /** 更新当前用户昵称/头像。 */
-  static async saveProfile(nickname: string, avatar: string): Promise<void> {
-    const req: UserReq = { nickname: nickname, avatarUrl: avatar };
+  /** 更新当前用户昵称/头像/邮箱。 */
+  static async saveProfile(nickname: string, avatar: string, email: string): Promise<void> {
+    const req: UserReq = { nickname: nickname, avatarUrl: avatar, email: email };
     ApiClient.unwrap(await ApiClient.post<UserDto>('/user', req));
   }
 }
