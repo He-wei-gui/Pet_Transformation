@@ -19,12 +19,6 @@ const CREATE_ENV: string =
   'pet_id TEXT NOT NULL, ' +
   'date TEXT, temperature REAL, humidity REAL, uvb REAL, note TEXT, created_at TEXT)';
 
-const CREATE_PHOTO: string =
-  'CREATE TABLE IF NOT EXISTS photo (' +
-  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-  'pet_id TEXT NOT NULL, ' +
-  'date TEXT, uri TEXT, length_cm REAL, caption TEXT, created_at TEXT)';
-
 const CREATE_TODO: string =
   'CREATE TABLE IF NOT EXISTS todo (' +
   'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
@@ -33,7 +27,7 @@ const CREATE_TODO: string =
 
 /**
  * 本地关系型数据库（SQLite）管理器，单例持有 RdbStore。
- * 接入云端后仅承载尚未上云的本地模块（蜕皮/环境/相册/待办）。
+ * 接入云端后仅承载尚未上云的本地模块（蜕皮/环境/待办；相册已上云）。
  * 须在使用任何本地 Repository 之前调用 init()（EntryAbility.onWindowStageCreate 中执行）。
  */
 export class Database {
@@ -68,7 +62,6 @@ export class Database {
   private static async createTables(store: relationalStore.RdbStore): Promise<void> {
     await store.executeSql(CREATE_MOLT);
     await store.executeSql(CREATE_ENV);
-    await store.executeSql(CREATE_PHOTO);
     await store.executeSql(CREATE_TODO);
   }
 }

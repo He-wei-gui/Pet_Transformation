@@ -1,9 +1,11 @@
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
-import { fileIo as fs } from '@kit.CoreFileKit';
 import { Photo } from '../../model/Photo';
 import { PhotoRepository } from '../../repository/PhotoRepository';
+import { ApiClient, UploadResult } from '../../service/ApiClient';
+import { Result } from '../../utils/Result';
 import { StorageKeys } from '../../constants/RouteConstants';
 import { DateUtil } from '../../utils/DateUtil';
+import { I18n } from '../../utils/I18n';
 import { Logger } from '../../utils/Logger';
 import { TopBar } from '../../components/TopBar';
 import { FormField } from '../../components/FormField';
@@ -13,7 +15,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Toast, Confirm } from '../../utils/Dialogs';
 
 /**
- * 成长相册页：系统图库选图 → 复制进应用沙箱 → 记录到相册表（含日期/体长/说明）。
+ * 成长相册页：系统图库选图 → 上传云端 → 记录到云端相册（含日期/体长/说明），多端可见。
  */
 @Entry
 @Component
@@ -23,6 +25,7 @@ struct AlbumPage {
   @State lengthStr: string = '';
   @State caption: string = '';
   @State loading: boolean = false;
+  @State errorMsg: string = '';
   private petId: string = '';
 
   aboutToAppear(): void {
@@ -38,49 +41,49 @@ struct AlbumPage {
     }
   }
 
-  /** 将图库 uri 复制到应用沙箱，返回沙箱内绝对路径。 */
-  private copyToSandbox(srcUri: string): string {
-    const dir: string = getContext(this).filesDir;
-    const dest: string = `${dir}/pet_${this.petId}_${Date.now()}.jpg`;
-    const destFile: fs.File = fs.openSync(dest, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-    const srcFile: fs.File = fs.openSync(srcUri, fs.OpenMode.READ_ONLY);
-    fs.copyFileSync(srcFile.fd, destFile.fd);
-    fs.closeSync(srcFile);
-    fs.closeSync(destFile);
-    return dest;
-  }
-
   private async pickAndAdd(): Promise<void> {
-    this.loading = true;
+    this.errorMsg = '';
     try {
       const options: photoAccessHelper.PhotoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
       options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
       options.maxSelectNumber = 1;
       const photoPicker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
       const result: photoAccessHelper.PhotoSelectResult = await photoPicker.select(options);
-      if (result.photoUris.length > 0) {
-        const stored: string = this.copyToSandbox(result.photoUris[0]);
-        const length: number = Number.parseFloat(this.lengthStr.trim());
-        await PhotoRepository.create(new Photo(0, this.petId, this.date, stored,
-          Number.isNaN(length) ? 0 : length, this.caption.trim(), DateUtil.today()));
-        this.lengthStr = '';
-        this.caption = '';
-        await this.reload();
-        Toast.added();
+      if (result.photoUris.length === 0) {
+        return;
       }
+      // 选图后再进入上传态，避免用户取消选择时仍转圈
+      this.loading = true;
+      const up: Result<UploadResult> = await ApiClient.uploadImage(result.photoUris[0]);
+      if (!up.success) {
+        this.errorMsg = I18n.t(getContext(this), up.error);
+        return;
+      }
+      const uploaded: UploadResult = up.data as UploadResult;
+      const length: number = Number.parseFloat(this.lengthStr.trim());
+      await PhotoRepository.create(new Photo('', this.petId, this.date, uploaded.url,
+        uploaded.thumb ?? uploaded.url, Number.isNaN(length) ? 0 : length,
+        this.caption.trim(), DateUtil.today()));
+      this.lengthStr = '';
+      this.caption = '';
+      await this.reload();
+      Toast.added();
     } catch (err) {
       Logger.error(`pick photo failed: ${JSON.stringify(err)}`);
+      this.errorMsg = I18n.t(getContext(this), (err as Error).message);
+    } finally {
+      this.loading = false;
     }
-    this.loading = false;
   }
 
-  private async remove(id: number): Promise<void> {
+  private async remove(id: string): Promise<void> {
     try {
       await PhotoRepository.remove(id);
       await this.reload();
       Toast.deleted();
     } catch (err) {
       Logger.error(`remove photo failed: ${JSON.stringify(err)}`);
+      this.errorMsg = I18n.t(getContext(this), (err as Error).message);
     }
   }
 
@@ -122,6 +125,12 @@ struct AlbumPage {
                 this.pickAndAdd();
               }
             })
+            if (this.errorMsg.length > 0) {
+              Text(this.errorMsg)
+                .fontSize($r('app.float.font_small'))
+                .fontColor($r('app.color.urgency_overdue'))
+                .width('100%')
+            }
           }
           .width('100%')
           .padding($r('app.float.space_lg'))
@@ -135,11 +144,12 @@ struct AlbumPage {
               ForEach(this.photos, (photo: Photo) => {
                 GridItem() {
                   Column() {
-                    Image(photo.uri)
+                    Image(photo.thumbUri)
                       .width('100%')
                       .height(140)
                       .borderRadius($r('app.float.radius_button'))
                       .objectFit(ImageFit.Cover)
+                      .alt($r('app.media.startIcon'))
                     Row() {
                       Column() {
                         if (photo.caption.length > 0) {

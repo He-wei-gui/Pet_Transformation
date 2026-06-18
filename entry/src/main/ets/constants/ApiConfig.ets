@@ -9,4 +9,7 @@ export class ApiConfig {
   /** 单次请求超时（毫秒）。 */
   static readonly CONNECT_TIMEOUT: number = 10000;
   static readonly READ_TIMEOUT: number = 15000;
+
+  /** 图片上传读超时（毫秒，比普通接口更宽松）。 */
+  static readonly UPLOAD_TIMEOUT: number = 30000;
 }
