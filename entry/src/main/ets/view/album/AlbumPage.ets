@@ -1,4 +1,5 @@
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { curves } from '@kit.ArkUI';
 import { Photo } from '../../model/Photo';
 import { PhotoRepository } from '../../repository/PhotoRepository';
 import { ApiClient, UploadResult } from '../../service/ApiClient';
@@ -27,6 +28,60 @@ struct AlbumPage {
   @State loading: boolean = false;
   @State errorMsg: string = '';
   private petId: string = '';
+
+  // ===== 高清缩放查看器状态（生化危机式自由查看：双指缩放 + 拖动 + 双击复位） =====
+  @State viewerVisible: boolean = false;
+  @State viewerSrc: string = '';
+  @State scaleVal: number = 1;
+  @State offsetX: number = 0;
+  @State offsetY: number = 0;
+  // 手势基线：每次手势开始时累加，避免跳变
+  private baseScale: number = 1;
+  private baseOffsetX: number = 0;
+  private baseOffsetY: number = 0;
+
+  private static readonly SCALE_MIN: number = 0.5;
+  private static readonly SCALE_MAX: number = 6;
+
+  private openViewer(src: string): void {
+    this.scaleVal = 1;
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.baseScale = 1;
+    this.baseOffsetX = 0;
+    this.baseOffsetY = 0;
+    this.viewerSrc = src;
+    this.viewerVisible = true;
+  }
+
+  private closeViewer(): void {
+    this.viewerVisible = false;
+  }
+
+  private clampScale(v: number): number {
+    if (v < AlbumPage.SCALE_MIN) {
+      return AlbumPage.SCALE_MIN;
+    }
+    if (v > AlbumPage.SCALE_MAX) {
+      return AlbumPage.SCALE_MAX;
+    }
+    return v;
+  }
+
+  // 双击：在原始大小与 2.5 倍之间切换，带平滑曲线
+  private toggleZoom(): void {
+    const target: number = this.scaleVal > 1.05 ? 1 : 2.5;
+    animateTo({ duration: 280, curve: curves.cubicBezierCurve(0.25, 0.1, 0.25, 1) }, () => {
+      this.scaleVal = target;
+      if (target === 1) {
+        this.offsetX = 0;
+        this.offsetY = 0;
+      }
+    });
+    this.baseScale = target;
+    this.baseOffsetX = this.offsetX;
+    this.baseOffsetY = this.offsetY;
+  }
 
   aboutToAppear(): void {
     this.petId = AppStorage.get<string>(StorageKeys.CURRENT_PET_ID) ?? '';
@@ -87,7 +142,81 @@ struct AlbumPage {
     }
   }
 
+  @Builder
+  viewerOverlay() {
+    Stack() {
+      // 背景层：半透明黑底，点击空白处关闭
+      Column()
+        .width('100%')
+        .height('100%')
+        .onClick(() => {
+          this.closeViewer();
+        })
+
+      // 高清图：双指缩放 + 拖动；双击复位/放大
+      Image(this.viewerSrc)
+        .objectFit(ImageFit.Contain)
+        .width('100%')
+        .height('100%')
+        .alt($r('app.media.startIcon'))
+        .scale({ x: this.scaleVal, y: this.scaleVal })
+        .translate({ x: this.offsetX, y: this.offsetY })
+        .gesture(
+          GestureGroup(GestureMode.Parallel,
+            PinchGesture({ fingers: 2 })
+              .onActionUpdate((event: GestureEvent) => {
+                this.scaleVal = this.clampScale(this.baseScale * event.scale);
+              })
+              .onActionEnd(() => {
+                this.baseScale = this.scaleVal;
+              }),
+            PanGesture()
+              .onActionUpdate((event: GestureEvent) => {
+                this.offsetX = this.baseOffsetX + event.offsetX;
+                this.offsetY = this.baseOffsetY + event.offsetY;
+              })
+              .onActionEnd(() => {
+                this.baseOffsetX = this.offsetX;
+                this.baseOffsetY = this.offsetY;
+              }),
+            TapGesture({ count: 2 })
+              .onAction(() => {
+                this.toggleZoom();
+              })
+          )
+        )
+
+      // 关闭按钮（固定右上角）
+      Text('✕')
+        .fontSize(22)
+        .fontColor(Color.White)
+        .textAlign(TextAlign.Center)
+        .width(40)
+        .height(40)
+        .borderRadius(20)
+        .backgroundColor('rgba(255,255,255,0.15)')
+        .position({ x: '85%', y: '5%' })
+        .onClick(() => {
+          this.closeViewer();
+        })
+
+      // 操作提示（固定底部）
+      Text($r('app.string.album_viewer_hint'))
+        .fontSize($r('app.float.font_small'))
+        .fontColor('rgba(255,255,255,0.6)')
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .position({ x: 0, y: '92%' })
+    }
+    .width('100%')
+    .height('100%')
+    .alignContent(Alignment.Center)
+    .backgroundColor('rgba(0,0,0,0.5)')
+    .transition(TransitionEffect.OPACITY.animation({ duration: 220, curve: curves.cubicBezierCurve(0.25, 0.1, 0.25, 1) }))
+  }
+
   build() {
+    Stack() {
     Column() {
       TopBar({ title: $r('app.string.record_album') })
 
@@ -150,6 +279,10 @@ struct AlbumPage {
                       .borderRadius($r('app.float.radius_button'))
                       .objectFit(ImageFit.Cover)
                       .alt($r('app.media.startIcon'))
+                      .onClick(() => {
+                        // 点击查看高清原图（非缩略图）
+                        this.openViewer(photo.uri);
+                      })
                     Row() {
                       Column() {
                         if (photo.caption.length > 0) {
@@ -198,5 +331,12 @@ struct AlbumPage {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.page_background'))
+
+      if (this.viewerVisible) {
+        this.viewerOverlay()
+      }
+    }
+    .width('100%')
+    .height('100%')
   }
 }

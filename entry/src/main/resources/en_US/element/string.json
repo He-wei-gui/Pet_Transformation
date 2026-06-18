@@ -77,6 +77,9 @@
     { "name": "pet_sub_interval", "value": "Substrate interval (days)" },
     { "name": "pet_note", "value": "Notes" },
     { "name": "pet_avatar_hint", "value": "Pick an icon" },
+    { "name": "avatar_tap_hint", "value": "Tap avatar to change" },
+    { "name": "avatar_upload", "value": "Upload Photo" },
+    { "name": "avatar_pick_emoji", "value": "Pick an icon" },
     { "name": "confirm_delete_pet", "value": "Delete this pet and all its records?" },
 
     { "name": "next_feed", "value": "Next feeding" },
@@ -122,6 +125,7 @@
     { "name": "photo_length", "value": "Length (cm)" },
     { "name": "photo_caption", "value": "Caption" },
     { "name": "album_empty", "value": "No photos yet. Capture the first moment!" },
+    { "name": "album_viewer_hint", "value": "Pinch to zoom · Drag to pan · Double-tap to reset · Tap blank to close" },
 
     { "name": "calendar_reminder", "value": "Remind me of today" },
     { "name": "reminder_title", "value": "Today's Tasks" },

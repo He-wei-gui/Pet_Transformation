@@ -38,7 +38,18 @@ export class PhotoRepository {
 
   static async listByPet(petId: string): Promise<Photo[]> {
     const dtos: PhotoDto[] = ApiClient.unwrap(await ApiClient.get<PhotoDto[]>(`/pet-photos?pet_id=${petId}`));
-    return (dtos ?? []).map((d: PhotoDto): Photo => PhotoRepository.toPhoto(d));
+    const photos: Photo[] = (dtos ?? []).map((d: PhotoDto): Photo => PhotoRepository.toPhoto(d));
+    // 最新日期在前、越往下越旧；同日按创建时间倒序。不依赖后端排序，前端兜底保证顺序。
+    photos.sort((a: Photo, b: Photo): number => {
+      if (a.date !== b.date) {
+        return a.date < b.date ? 1 : -1;
+      }
+      if (a.createdAt !== b.createdAt) {
+        return a.createdAt < b.createdAt ? 1 : -1;
+      }
+      return 0;
+    });
+    return photos;
   }
 
   static async create(photo: Photo): Promise<string> {

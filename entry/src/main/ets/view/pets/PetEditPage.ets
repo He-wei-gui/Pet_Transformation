@@ -1,16 +1,20 @@
 import { router } from '@kit.ArkUI';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { Pet } from '../../model/Pet';
 import { PetService } from '../../service/PetService';
 import { SessionStore } from '../../service/SessionStore';
 import { ScheduleService } from '../../service/ScheduleService';
+import { ApiClient, UploadResult } from '../../service/ApiClient';
 import { StorageKeys } from '../../constants/RouteConstants';
 import { Validator, ValidationResult } from '../../utils/Validator';
+import { Result } from '../../utils/Result';
 import { DateUtil } from '../../utils/DateUtil';
 import { I18n } from '../../utils/I18n';
 import { Logger } from '../../utils/Logger';
 import { TopBar } from '../../components/TopBar';
 import { FormField } from '../../components/FormField';
 import { PrimaryButton } from '../../components/PrimaryButton';
+import { PetAvatar } from '../../components/PetAvatar';
 
 const AVATARS: string[] = ['🦎', '🐉', '🐍', '🐢', '🦖', '🐸', '🦂', '🐊'];
 
@@ -30,6 +34,8 @@ struct PetEditPage {
   @State note: string = '';
   @State errorMsg: string = '';
   @State loading: boolean = false;
+  @State avatarPickerOpen: boolean = false;
+  @State avatarUploading: boolean = false;
   private origNextFeed: string = '';
   private origNextSub: string = '';
   private userId: string = '';
@@ -106,24 +112,97 @@ struct PetEditPage {
     }
   }
 
+  // 从系统图库选图并上传，成功后把头像设为云端图片 URL
+  private async pickAvatarImage(): Promise<void> {
+    try {
+      const options: photoAccessHelper.PhotoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+      options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+      options.maxSelectNumber = 1;
+      const picker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
+      const result: photoAccessHelper.PhotoSelectResult = await picker.select(options);
+      if (result.photoUris.length === 0) {
+        return;
+      }
+      this.avatarUploading = true;
+      const up: Result<UploadResult> = await ApiClient.uploadImage(result.photoUris[0]);
+      if (!up.success) {
+        this.errorMsg = I18n.t(getContext(this), up.error);
+        return;
+      }
+      this.avatar = (up.data as UploadResult).url;
+    } catch (err) {
+      Logger.error(`pick avatar failed: ${JSON.stringify(err)}`);
+      this.errorMsg = I18n.t(getContext(this), (err as Error).message);
+    } finally {
+      this.avatarUploading = false;
+    }
+  }
+
+  // 点击大头像后展开的选择面板：上传照片 + emoji 图标
   @Builder
   avatarPicker() {
-    Row({ space: 10 }) {
-      ForEach(AVATARS, (emoji: string) => {
-        Stack() {
-          Text(emoji).fontSize(26)
+    Column({ space: 12 }) {
+      PrimaryButton({
+        label: $r('app.string.avatar_upload'),
+        loading: this.avatarUploading,
+        onTap: (): void => {
+          this.pickAvatarImage();
         }
-        .width(48)
-        .height(48)
-        .borderRadius(24)
-        .backgroundColor(this.avatar === emoji ? $r('app.color.urgency_upcoming_bg') : $r('app.color.input_background'))
-        .borderWidth(this.avatar === emoji ? 2 : 0)
-        .borderColor($r('app.color.brand_primary'))
-        .onClick(() => {
-          this.avatar = emoji;
-        })
-      }, (emoji: string) => emoji)
+      })
+      Text($r('app.string.avatar_pick_emoji'))
+        .fontSize($r('app.float.font_caption'))
+        .fontColor($r('app.color.text_secondary'))
+        .width('100%')
+      Scroll() {
+        Row({ space: 10 }) {
+          ForEach(AVATARS, (emoji: string) => {
+            Stack() {
+              Text(emoji).fontSize(26)
+            }
+            .width(48)
+            .height(48)
+            .borderRadius(24)
+            .backgroundColor(this.avatar === emoji ? $r('app.color.urgency_upcoming_bg') : $r('app.color.input_background'))
+            .borderWidth(this.avatar === emoji ? 2 : 0)
+            .borderColor($r('app.color.brand_primary'))
+            .onClick(() => {
+              this.avatar = emoji;
+            })
+          }, (emoji: string) => emoji)
+        }
+      }
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off)
+      .width('100%')
     }
+    .width('100%')
+    .padding($r('app.float.space_lg'))
+    .backgroundColor($r('app.color.surface'))
+    .borderRadius($r('app.float.radius_card'))
+  }
+
+  // 当前头像 + 相机角标，点击展开/收起选择面板
+  @Builder
+  avatarHeader() {
+    Column({ space: 6 }) {
+      Stack({ alignContent: Alignment.BottomEnd }) {
+        PetAvatar({ avatar: this.avatar, diameter: 88 })
+        Text('📷')
+          .fontSize(14)
+          .width(28)
+          .height(28)
+          .textAlign(TextAlign.Center)
+          .borderRadius(14)
+          .backgroundColor($r('app.color.brand_primary'))
+      }
+      .onClick(() => {
+        this.avatarPickerOpen = !this.avatarPickerOpen;
+      })
+      Text($r('app.string.avatar_tap_hint'))
+        .fontSize($r('app.float.font_caption'))
+        .fontColor($r('app.color.text_secondary'))
+    }
+    .width('100%')
   }
 
   build() {
@@ -132,16 +211,10 @@ struct PetEditPage {
 
       Scroll() {
         Column({ space: 16 }) {
-          Text($r('app.string.pet_avatar_hint'))
-            .fontSize($r('app.float.font_caption'))
-            .fontColor($r('app.color.text_secondary'))
-            .width('100%')
-          Scroll() {
+          this.avatarHeader()
+          if (this.avatarPickerOpen) {
             this.avatarPicker()
           }
-          .scrollable(ScrollDirection.Horizontal)
-          .scrollBar(BarState.Off)
-          .width('100%')
 
           FormField({
             label: $r('app.string.pet_name'),

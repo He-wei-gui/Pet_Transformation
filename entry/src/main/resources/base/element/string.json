@@ -77,6 +77,9 @@
     { "name": "pet_sub_interval", "value": "换料间隔（天）" },
     { "name": "pet_note", "value": "备注" },
     { "name": "pet_avatar_hint", "value": "选择一个图标" },
+    { "name": "avatar_tap_hint", "value": "点击头像更换" },
+    { "name": "avatar_upload", "value": "上传照片" },
+    { "name": "avatar_pick_emoji", "value": "选择图标" },
     { "name": "confirm_delete_pet", "value": "确定删除该宠物及其全部记录？" },
 
     { "name": "next_feed", "value": "下次喂食" },
@@ -122,6 +125,7 @@
     { "name": "photo_length", "value": "体长（cm）" },
     { "name": "photo_caption", "value": "说明" },
     { "name": "album_empty", "value": "还没有照片，记录第一张成长瞬间吧" },
+    { "name": "album_viewer_hint", "value": "双指缩放 · 拖动查看 · 双击复位 · 点空白关闭" },
 
     { "name": "calendar_reminder", "value": "提醒今日待办" },
     { "name": "reminder_title", "value": "今日待办" },
