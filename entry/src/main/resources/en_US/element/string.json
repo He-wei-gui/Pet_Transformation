@@ -143,6 +143,12 @@
     { "name": "photo_caption", "value": "Caption" },
     { "name": "album_empty", "value": "No photos yet. Capture the first moment!" },
     { "name": "album_viewer_hint", "value": "Pinch to zoom · Drag to pan · Double-tap to reset · Tap blank to close" },
+    { "name": "showcase_title", "value": "Moments" },
+    { "name": "video_title", "value": "Growth Videos" },
+    { "name": "video_add", "value": "Upload Video" },
+    { "name": "video_empty", "value": "No videos yet. Upload your first growth clip!" },
+    { "name": "video_caption", "value": "Caption" },
+    { "name": "mine_video", "value": "Growth Videos" },
 
     { "name": "calendar_reminder", "value": "Remind me of today" },
     { "name": "reminder_title", "value": "Today's Tasks" },

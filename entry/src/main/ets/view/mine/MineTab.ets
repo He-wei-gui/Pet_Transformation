@@ -118,6 +118,27 @@ export struct MineTab {
         })
 
         Row() {
+          Text('🎬')
+            .fontSize(18)
+          Text($r('app.string.mine_video'))
+            .fontSize($r('app.float.font_body'))
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .margin({ left: $r('app.float.space_md') })
+          Text('›')
+            .fontSize(22)
+            .fontColor($r('app.color.text_secondary'))
+        }
+        .width('100%')
+        .padding($r('app.float.space_lg'))
+        .margin({ top: $r('app.float.space_md') })
+        .backgroundColor($r('app.color.surface'))
+        .borderRadius($r('app.float.radius_card'))
+        .onClick(() => {
+          router.pushUrl({ url: RouteConstants.VIDEO });
+        })
+
+        Row() {
           Text('🌙')
             .fontSize(18)
           Text($r('app.string.mine_theme'))

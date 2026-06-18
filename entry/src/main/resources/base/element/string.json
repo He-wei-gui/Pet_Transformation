@@ -143,6 +143,12 @@
     { "name": "photo_caption", "value": "说明" },
     { "name": "album_empty", "value": "还没有照片，记录第一张成长瞬间吧" },
     { "name": "album_viewer_hint", "value": "双指缩放 · 拖动查看 · 双击复位 · 点空白关闭" },
+    { "name": "showcase_title", "value": "成长瞬间" },
+    { "name": "video_title", "value": "成长视频" },
+    { "name": "video_add", "value": "上传视频" },
+    { "name": "video_empty", "value": "还没有视频，上传第一段成长记录吧" },
+    { "name": "video_caption", "value": "视频说明" },
+    { "name": "mine_video", "value": "成长视频" },
 
     { "name": "calendar_reminder", "value": "提醒今日待办" },
     { "name": "reminder_title", "value": "今日待办" },

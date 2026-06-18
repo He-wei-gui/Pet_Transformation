@@ -13,6 +13,7 @@
     "view/logs/SubstrateLogPage",
     "view/logs/MoltLogPage",
     "view/logs/EnvLogPage",
-    "view/album/AlbumPage"
+    "view/album/AlbumPage",
+    "view/video/VideoPage"
   ]
 }

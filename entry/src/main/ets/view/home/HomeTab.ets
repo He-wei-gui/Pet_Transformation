@@ -1,9 +1,12 @@
 import { router } from '@kit.ArkUI';
 import { ChecklistEntry } from '../../model/ChecklistEntry';
 import { Todo } from '../../model/Todo';
+import { Pet } from '../../model/Pet';
+import { Photo } from '../../model/Photo';
 import { PetService } from '../../service/PetService';
 import { SessionStore } from '../../service/SessionStore';
 import { TodoRepository } from '../../repository/TodoRepository';
+import { PhotoRepository } from '../../repository/PhotoRepository';
 import { RouteConstants, StorageKeys } from '../../constants/RouteConstants';
 import { ChecklistItem } from '../../components/ChecklistItem';
 import { DateField } from '../../components/DateField';
@@ -22,6 +25,7 @@ export struct HomeTab {
   @Prop @Watch('reload') tick: number = 0;
   @State entries: ChecklistEntry[] = [];
   @State todos: Todo[] = [];
+  @State showcase: Photo[] = [];
   @State completedKeys: string[] = [];
   @State adding: boolean = false;
   @State newTodo: string = '';
@@ -38,6 +42,25 @@ export struct HomeTab {
       this.todos = await TodoRepository.listByUser(SessionStore.currentUserId());
     } catch (err) {
       Logger.error(`load home failed: ${JSON.stringify(err)}`);
+    }
+    this.loadShowcase();
+  }
+
+  /** 汇总名下所有宠物的相册照片，按日期取最新若干张用于主页轮播。 */
+  private async loadShowcase(): Promise<void> {
+    try {
+      const pets: Pet[] = await PetService.listPets();
+      const all: Photo[] = [];
+      for (const pet of pets) {
+        const photos: Photo[] = await PhotoRepository.listByPet(pet.id);
+        for (const p of photos) {
+          all.push(p);
+        }
+      }
+      all.sort((a: Photo, b: Photo): number => (a.date < b.date ? 1 : (a.date > b.date ? -1 : 0)));
+      this.showcase = all.slice(0, 10);
+    } catch (err) {
+      Logger.error(`load showcase failed: ${JSON.stringify(err)}`);
     }
   }
 
@@ -243,6 +266,42 @@ export struct HomeTab {
     .borderRadius($r('app.float.radius_card'))
   }
 
+  /** 成长瞬间：自动轮播相册照片，点按进入该宠物相册查看大图。 */
+  @Builder
+  showcaseBanner() {
+    Column() {
+      Text($r('app.string.showcase_title'))
+        .fontSize($r('app.float.font_caption'))
+        .fontColor($r('app.color.text_secondary'))
+        .width('100%')
+        .margin({ bottom: $r('app.float.space_xs') })
+      Swiper() {
+        ForEach(this.showcase, (photo: Photo) => {
+          Image(photo.thumbUri)
+            .width('100%')
+            .height(180)
+            .objectFit(ImageFit.Cover)
+            .borderRadius($r('app.float.radius_card'))
+            .alt($r('app.media.startIcon'))
+            .onClick(() => {
+              AppStorage.setOrCreate(StorageKeys.CURRENT_PET_ID, photo.petId);
+              router.pushUrl({ url: RouteConstants.ALBUM });
+            })
+        }, (photo: Photo) => photo.id)
+      }
+      .autoPlay(true)
+      .interval(3000)
+      .loop(true)
+      .indicator(true)
+      .itemSpace(8)
+      .width('100%')
+      .height(180)
+    }
+    .width('100%')
+    .padding({ left: $r('app.float.space_xl'), right: $r('app.float.space_xl') })
+    .margin({ bottom: $r('app.float.space_lg') })
+  }
+
   build() {
     Column() {
       Column() {
@@ -280,6 +339,10 @@ export struct HomeTab {
         top: $r('app.float.space_xxl'),
         bottom: $r('app.float.space_lg')
       })
+
+      if (this.showcase.length > 0) {
+        this.showcaseBanner()
+      }
 
       if (this.displayedTodos().length === 0 && this.displayedEntries().length === 0) {
         EmptyState({ emoji: '🌿', message: $r('app.string.checklist_empty') })

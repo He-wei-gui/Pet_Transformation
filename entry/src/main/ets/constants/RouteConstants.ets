@@ -19,6 +19,7 @@ export class RouteConstants {
   static readonly MOLT_LOG: string = 'view/logs/MoltLogPage';
   static readonly ENV_LOG: string = 'view/logs/EnvLogPage';
   static readonly ALBUM: string = 'view/album/AlbumPage';
+  static readonly VIDEO: string = 'view/video/VideoPage';
 }
 
 /**

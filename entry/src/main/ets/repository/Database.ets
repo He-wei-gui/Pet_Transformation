@@ -25,6 +25,13 @@ const CREATE_TODO: string =
   'user_id TEXT NOT NULL, ' +
   'title TEXT NOT NULL, date TEXT, done INTEGER DEFAULT 0, created_at TEXT)';
 
+// 成长视频：视频文件存应用沙箱，uri 为本地路径（不上云）。
+const CREATE_VIDEO: string =
+  'CREATE TABLE IF NOT EXISTS video (' +
+  'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+  'user_id TEXT NOT NULL, pet_id TEXT, ' +
+  'uri TEXT NOT NULL, caption TEXT, created_at TEXT)';
+
 /**
  * 本地关系型数据库（SQLite）管理器，单例持有 RdbStore。
  * 接入云端后仅承载尚未上云的本地模块（蜕皮/环境/待办；相册已上云）。
@@ -63,5 +70,6 @@ export class Database {
     await store.executeSql(CREATE_MOLT);
     await store.executeSql(CREATE_ENV);
     await store.executeSql(CREATE_TODO);
+    await store.executeSql(CREATE_VIDEO);
   }
 }
